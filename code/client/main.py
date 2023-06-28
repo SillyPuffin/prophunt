@@ -1,6 +1,6 @@
 import pygame; from pygame.locals import *
 from sys import exit
-
+#hey
 pygame.init()
 
 #main class
