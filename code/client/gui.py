@@ -8,13 +8,14 @@ class Text():
         self.scale = scale
         self.space = space*scale
         count = 0
-        for pixel in image.get_width():
-            p = image.get_at(pixel,0)
+        for pixel in range(image.get_width()):
+            p = image.get_at((pixel,0))
             if self.lstart and p == (255,0,0):
                 #get image letter
-                dist = p - self.lstart -1
+                dist = pixel - self.lstart -1
                 height = image.get_height()
                 pos= (self.lstart+1,0)
+                print(pos,(dist,height))
                 letter = self.get_letter(image,pos,(dist,height))
                 self.letters[order[count]] = letter
                 count +=1
@@ -22,7 +23,7 @@ class Text():
                 self.lstart = pixel
             
     def get_letter(self, image, pos, size):
-        letter = image.subsurface(image,(pos,size))
+        letter = image.subsurface((pos,size))
         letter.set_colorkey((0,0,0))
         return letter
 

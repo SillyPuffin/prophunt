@@ -1,5 +1,6 @@
 import pygame; from pygame.locals import *
 import settings as st
+from gui import *
 from utils import debug
 from sys import exit
 
@@ -21,12 +22,14 @@ window_size = (st.base_size[0]*scale,st.base_size[1]*scale)
 class Main():
     def __init__(self):
         self.size = (window_size)
+        self.scale = scale
         if exact:
             self.screen = pygame.display.set_mode(self.size,pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
-
+        self.font = pygame.image.load('graphics/font_sheet.png').convert()
+        self.text = Text(self.scale,self.font,3)
     def run(self):
         while True:
             events = pygame.event.get()
