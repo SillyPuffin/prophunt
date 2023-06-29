@@ -30,6 +30,8 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.scale,self.font,3)
+        self.words = self.text.render('abcd',1)
+        print(self.words)
     def run(self):
         while True:
             events = pygame.event.get()
@@ -40,7 +42,9 @@ class Main():
 
             self.screen.fill(0)
 
-            debug(int(self.clock.get_fps()),scale)
+            # debug(int(self.clock.get_fps()),scale)
+
+            self.screen.blit(self.words,(0,0))
 
             self.clock.tick(st.fps)
             pygame.display.update()
