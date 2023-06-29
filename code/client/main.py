@@ -7,8 +7,7 @@ from sys import exit
 pygame.init()
 
 sinfo = pygame.display.Info()
-screensize = (sinfo.current_w,sinfo.current_w)
-
+screensize = (sinfo.current_w,sinfo.current_h)
 remainder = max(screensize) % st.base_size[screensize.index(max(screensize))]
 if remainder == 0:
     exact = True
