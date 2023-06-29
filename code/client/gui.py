@@ -2,11 +2,11 @@ import pygame
 
 class Text():
     def __init__(self,scale,image,space):
-        order = "abcdefghijklmnopqrstuvwxyz1234567890'.?!/\()"
+        order = " abcdefghijklmnopqrstuvwxyz1234567890'.?!/\()"
         self.letters = {}
         self.lstart = None
         self.scale = scale
-        self.space = space*scale
+        self.space = space
         count = 0
         for pixel in range(image.get_width()):
             p = image.get_at((pixel,0))
@@ -27,7 +27,7 @@ class Text():
         letter.set_colorkey((0,0,0))
         return letter
 
-    def render(self,text,size,clr=None):
+    def render(self,text,clr=None):
         string = str(text)
         #get image width
         width = 0
@@ -36,7 +36,7 @@ class Text():
             width += self.letters[s].get_width()
             if self.letters[s].get_height() > height:
                 height = self.letters[s].get_height()
-        width + (len(string)-1) * self.space
+        width += (len(string)-1) * self.space
         surface = pygame.Surface((width,height))
         #blitimage
         surface.fill((0,0,0)),surface.set_colorkey((0,0,0))
@@ -48,6 +48,7 @@ class Text():
 
         #change colour if necessary
         if clr:
+            print('hi')
             surface = self.swap_pallet(surface,clr)
 
         surface = pygame.transform.scale(surface,(surface.get_width()*self.scale,surface.get_height()*self.scale))
@@ -59,7 +60,7 @@ class Text():
         img_copy.fill(clr)
         surface.set_colorkey((255,255,255))
         img_copy.blit(surface,(0,0))
-        surface.set_colorkey((0,0,0))
-        return surface
+        img_copy.set_colorkey((0,0,0))
+        return img_copy
 
 

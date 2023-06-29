@@ -29,9 +29,9 @@ class Main():
             self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
-        self.text = Text(self.scale,self.font,3)
-        self.words = self.text.render('abcd',1)
-        print(self.words)
+        self.text = Text(self.scale,self.font,1)
+        self.words = self.text.render('bag feeeeeeed',(255,200,3))
+        self.words_rect = self.words.get_rect()
     def run(self):
         while True:
             events = pygame.event.get()
@@ -44,7 +44,7 @@ class Main():
 
             # debug(int(self.clock.get_fps()),scale)
 
-            self.screen.blit(self.words,(0,0))
+            self.screen.blit(self.words,(self.words_rect))
 
             self.clock.tick(st.fps)
             pygame.display.update()
