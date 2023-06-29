@@ -1,7 +1,7 @@
 import pygame; from pygame.locals import *
 import settings as st
 from sys import exit
-#hey
+
 pygame.init()
 
 sinfo = pygame.display.Info()
