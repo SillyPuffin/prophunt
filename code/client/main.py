@@ -1,7 +1,15 @@
 import pygame; from pygame.locals import *
+import settings as st
 from sys import exit
 #hey
 pygame.init()
+
+sinfo = pygame.display.Info()
+screensize = (sinfo.current_w,sinfo.current_w)
+
+scale = max(screensize)// st.base_size[screensize.index(max(screensize))]
+print(scale)
+
 
 #main class
 class Main():
