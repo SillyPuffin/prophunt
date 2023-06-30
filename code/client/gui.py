@@ -1,5 +1,15 @@
 import pygame
 
+class Word_Image():
+    def __init__(self,image):
+        self.image = image
+        self.rect = pygame.Rect((0,0),self.image.get_size())
+
+    def draw(self, screen):
+        screen.blit(self.image,self.rect)
+
+
+
 class Text():
     def __init__(self,scale,image,space):
         order = " abcdefghijklmnopqrstuvwxyz,'.?!1234567890/\()"
@@ -27,8 +37,27 @@ class Text():
         letter.set_colorkey((0,0,0))
         return letter
 
-    def render(self,text,clr=None):
-        string = str(text)
+    def render(self,text,size=1,box = False,clr=None):
+        if not box:
+            string = str(text)
+            surface = self.draw_line(string)
+        else:
+            words = str(text)
+            words = words.split(" ")
+            string_words = ""
+            for i in words:
+                string += i
+            max_width = len(string_words) + self.space* (len(words)-1)
+
+        #change colour if necessary
+        if clr:
+            surface = self.swap_pallet(surface,clr)
+
+        surface = pygame.transform.scale(surface,(surface.get_width()*self.scale,surface.get_height()*self.scale))
+        
+        return Word_Image(surface)
+
+    def draw_line(self,string):
         #get image width
         width = 0
         height = 0
@@ -46,14 +75,8 @@ class Text():
             surface.blit(self.letters[char],(x_offset, height - self.letters[char].get_height()))
             x_offset += self.letters[char].get_width() + self.space
 
-        #change colour if necessary
-        if clr:
-            print('hi')
-            surface = self.swap_pallet(surface,clr)
-
-        surface = pygame.transform.scale(surface,(surface.get_width()*self.scale,surface.get_height()*self.scale))
-        
         return surface
+
 
     def swap_pallet(self,surface,clr):
         img_copy = pygame.Surface(surface.get_size())

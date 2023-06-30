@@ -29,8 +29,7 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.scale,self.font,1)
-        self.words = self.text.render("hello, how are you my good friend, have a g'day 1234 !",(255,200,3))
-        self.words_rect = self.words.get_rect()
+        self.words = self.text.render("hello, how are you my good friend, have a g'day 1234 !",1,False,(255,200,3))
     def run(self):
         while True:
             events = pygame.event.get()
@@ -43,7 +42,7 @@ class Main():
 
             # debug(int(self.clock.get_fps()),scale)
 
-            self.screen.blit(self.words,(self.words_rect))
+            self.words.draw(self.screen)
 
             self.clock.tick(st.fps)
             pygame.display.update()
