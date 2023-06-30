@@ -2,7 +2,7 @@ import pygame
 
 class Text():
     def __init__(self,scale,image,space):
-        order = " abcdefghijklmnopqrstuvwxyz1234567890'.?!/\()"
+        order = " abcdefghijklmnopqrstuvwxyz,'.?!1234567890/\()"
         self.letters = {}
         self.lstart = None
         self.scale = scale
