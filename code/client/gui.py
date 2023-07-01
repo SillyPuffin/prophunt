@@ -37,19 +37,35 @@ class Text():
         letter.set_colorkey((0,0,0))
         return letter
 
+    def get_lengths(self,words):
+        lengths = []
+        for word in words:
+            length = 0
+            for let in word:
+                length += self.letters[let]
+            lengths.append(length)
+        return lengths
+
     def render(self,text,size=1,box = False,clr=None):
         if not box:
             string = str(text)
             surface = self.draw_line(string)
         else:
+            # if text box
             words = str(text)
             words = words.split(" ")
+            lengths = self.get_lengths(words)
             string_words = ""
             for i in words:
                 string += i
             max_width = len(string_words) + self.space* (len(words)-1)
             if min(box) == 0:
                 if box.index(max(box)) == 0:
+                    width = 0
+                    for word in lengths:
+                        if width + word <= box[0]+space:
+                            width += word
+                        
                     
 
 
@@ -57,7 +73,7 @@ class Text():
         if clr:
             surface = self.swap_pallet(surface,clr)
 
-        surface = pygame.transform.scale(surface,(surface.get_width()*self.scale,surface.get_height()*self.scale))
+        surface = pygame.transform.scale(surface,(surface.get_width()*size*self.scale,surface.get_height()*size*self.scale))
         
         return Word_Image(surface)
 
