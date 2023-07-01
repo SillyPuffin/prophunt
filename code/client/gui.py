@@ -8,8 +8,6 @@ class Word_Image():
     def draw(self, screen):
         screen.blit(self.image,self.rect)
 
-
-
 class Text():
     def __init__(self,scale,image,spacing):
         order = " abcdefghijklmnopqrstuvwxyz,'.?!1234567890/\()"
@@ -123,7 +121,6 @@ class Text():
         surface = pygame.transform.scale(surface,(surface.get_width()*size,surface.get_height()*size))
 
         return surface
-
 
     def swap_pallet(self,surface,clr):
         img_copy = pygame.Surface(surface.get_size())
