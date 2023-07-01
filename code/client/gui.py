@@ -55,7 +55,6 @@ class Text():
             words = str(text)
             words = words.split(" ")
             lengths = self.get_lengths(words,size)
-            print(lengths)
             if min(box) == 0:
                 if box.index(max(box)) == 0:
                     height = self.letters[" "].get_height()
@@ -67,11 +66,10 @@ class Text():
                     line = ""
                     for index,word in enumerate(lengths):
                         if not line:
-                            twidth = width + word
                             WordLength = word
                         else:
-                            twidth = width + self.space + word
-                            WordLength = word +self.space
+                            WordLength = word + self.space
+                        twidth = self.GetLengthString(line+" " + words[index])
                         #adding borders 
                         if twidth <= BoxWidth:
                             width += WordLength
@@ -80,7 +78,6 @@ class Text():
                                 line += " " +words[index]
                             else:
                                 line += words[index]
-                            print(line)
                         elif WordLength > BoxWidth:
                             pass
                         else:
@@ -99,9 +96,20 @@ class Text():
         if clr:
             surface = self.swap_pallet(surface,clr)
 
-        surface = pygame.transform.scale(surface,(surface.get_width()*self.scale,surface.get_height()*self.scale))
+        #scaling to scale
+        surface = self.scale_image(surface,self.scale)
         
         return Word_Image(surface)
+
+    def scale_image(self,surface,amount):
+        surface = pygame.transform.scale(surface,(surface.get_width()*amount,surface.get_height()*amount))
+        return surface
+
+    def GetLengthString(self,string):
+        width = 0
+        for letter in string:
+            width += self.letters[letter].get_width() + self.spacing
+        return width
 
     def draw_line(self,string,size):
         #get image width
@@ -119,7 +127,8 @@ class Text():
             surface.blit(self.letters[char],(x_offset, height - self.letters[char].get_height()))
             x_offset += self.letters[char].get_width() + self.spacing
 
-        surface = pygame.transform.scale(surface,(surface.get_width()*size,surface.get_height()*size))
+        #scaling to size
+        surface = self.scale_image(surface,size)
 
         return surface
 
