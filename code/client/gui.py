@@ -48,6 +48,10 @@ class Text():
             for i in words:
                 string += i
             max_width = len(string_words) + self.space* (len(words)-1)
+            if min(box) == 0:
+                if box.index(max(box)) == 0:
+                    
+
 
         #change colour if necessary
         if clr:
