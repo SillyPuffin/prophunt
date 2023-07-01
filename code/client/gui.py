@@ -71,24 +71,25 @@ class Text():
                             WordLength = word
                         else:
                             twidth = width + self.space + word
-                            WordLength = word + self.space
+                            WordLength = word +self.space
+                        #adding borders 
                         if twidth <= BoxWidth:
                             width += WordLength
+                            # print(words[index])
                             if line:
                                 line += " " +words[index]
                             else:
                                 line += words[index]
+                            print(line)
                         elif WordLength > BoxWidth:
-                            print(words[index])
+                            pass
                         else:
                             NumLines += 1
                             width = 0
                             lines.append(line)
                             line = ""
+                            line += words[index]
                     lines.append(line)
-
-                    print(lines)
-
                     #creating surface & drawing
                     surface = pygame.Surface((BoxWidth,(height+1)*NumLines))
                     for index,li in enumerate(lines):

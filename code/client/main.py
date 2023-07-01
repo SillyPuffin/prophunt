@@ -29,7 +29,7 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.scale,self.font,1)
-        self.words = self.text.render("aaa hello, how are you my good friend, have a g'day 1234 !",1,(100,0),(255,200,3))
+        self.words = self.text.render("aaa hello, how are you my good friend, have a g'day 1234 !",0.5,(100,0),(255,200,3))
     def run(self):
         while True:
             events = pygame.event.get()
