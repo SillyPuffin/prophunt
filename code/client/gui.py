@@ -112,7 +112,7 @@ class Text():
                 WordLength = word
             else:
                 WordLength = word + self.space
-            twidth = self.GetLengthString(line+" " + words[index])
+            twidth = self.GetLengthString(line+" " + words[index],size)
             #adding borders 
             if twidth <= BoxWidth:
                 width += WordLength
@@ -122,18 +122,27 @@ class Text():
                 else:
                     line += words[index]
             elif WordLength > BoxWidth:
-                pass
+                for letter in words[index]:
+                    if width + self.letters[letter].get_width() + self.spacing <= BoxWidth:
+                        line += letter
+                        width += self.letters[letter].get_width() + self.spacing
+                    else:
+                        NumLines += 1
+                        lines.append(line)
+                        line = ""
+                        line += letter
+                        width = self.letters[letter].get_width()
             else:
                 NumLines += 1
-                width = 0
                 lines.append(line)
                 line = ""
                 line += words[index]
+                width = self.GetLengthString(words[index], size)
         lines.append(line)
         #creating surface & drawing
-        surface = pygame.Surface((BoxWidth,(height+1)*NumLines))
+        surface = pygame.Surface((BoxWidth,(height+1)*size*NumLines))
         for index,li in enumerate(lines):
-            surface.blit(self.draw_line(li,size),(0,index*(height+1)))
+            surface.blit(self.draw_line(li,size),(0,index*(height+1)*size))
         
         return surface
 
@@ -141,10 +150,10 @@ class Text():
         surface = pygame.transform.scale(surface,(surface.get_width()*amount,surface.get_height()*amount))
         return surface
 
-    def GetLengthString(self,string):
+    def GetLengthString(self,string, size):
         width = 0
         for letter in string:
-            width += self.letters[letter].get_width() + self.spacing
+            width += (self.letters[letter].get_width() + self.spacing)*size
         return width
 
     def draw_line(self,string,size):
