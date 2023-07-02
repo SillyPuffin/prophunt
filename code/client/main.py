@@ -29,7 +29,8 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.scale,self.font,1)
-        self.words = self.text.render("a b c d e f g h i j k l m n o p q u r s t u v w x y z",10,(100,30),(255,200,3))
+        self.words = self.text.render("aaaaaaaaaaaaaaaaaaaaaaa",2,(100,30),(255,200,3))
+        self.words.rect.topleft = (100,200)
     def run(self):
         while True:
             events = pygame.event.get()

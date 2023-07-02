@@ -123,15 +123,15 @@ class Text():
                     line += words[index]
             elif WordLength > BoxWidth:
                 for letter in words[index]:
-                    if width + self.letters[letter].get_width() + self.spacing <= BoxWidth:
+                    if width + (self.letters[letter].get_width() + self.spacing)*size <= BoxWidth:
                         line += letter
-                        width += self.letters[letter].get_width() + self.spacing
+                        width += (self.letters[letter].get_width() + self.spacing)*size
                     else:
                         NumLines += 1
                         lines.append(line)
                         line = ""
                         line += letter
-                        width = self.letters[letter].get_width()
+                        width = (self.letters[letter].get_width() + self.spacing) * size
             else:
                 NumLines += 1
                 lines.append(line)
