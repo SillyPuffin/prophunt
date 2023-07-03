@@ -205,5 +205,3 @@ class Text():
         img_copy.blit(surface,(0,0))
         img_copy.set_colorkey((0,0,0))
         return img_copy
-
-
