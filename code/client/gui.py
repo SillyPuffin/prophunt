@@ -67,7 +67,8 @@ class Text():
         for word in words:
             length = 0
             for let in word:
-                length += (self.letters[let].get_width()+self.spacing)*size 
+                if let != '\n':
+                    length += (self.letters[let].get_width()+self.spacing)*size 
             lengths.append(length)
         return lengths
 
@@ -115,29 +116,31 @@ class Text():
             twidth = self.GetLengthString(line+" " + words[index],size)
             #adding borders 
             if twidth <= BoxWidth:
-                width += WordLength
-                # print(words[index])
+                # width += WordLength
+                string = words[index]
                 if line:
-                    line += " " +words[index]
-                else:
-                    line += words[index]
+                    line += " "
+                    width += self.space
+                lines,line,NumLines,width = self.AddWordToLine(lines,line,NumLines,width,string)
+
             elif WordLength > BoxWidth:
                 for letter in words[index]:
-                    if width + (self.letters[letter].get_width() + self.spacing)*size <= BoxWidth:
+                    if letter != '\n' and width + (self.letters[letter].get_width() + self.spacing)*size <= BoxWidth:
                         line += letter
                         width += (self.letters[letter].get_width() + self.spacing)*size
                     else:
                         NumLines += 1
                         lines.append(line)
                         line = ""
-                        line += letter
-                        width = (self.letters[letter].get_width() + self.spacing) * size
+                        width = 0
+                        if letter != '\n':
+                            line += letter
+                            width = (self.letters[letter].get_width() + self.spacing) * size
             else:
                 NumLines += 1
                 lines.append(line)
                 line = ""
-                line += words[index]
-                width = self.GetLengthString(words[index], size)
+                lines,line,NumLines,width = self.AddWordToLine(lines,line,NumLines,width, words[index])
         lines.append(line)
         #creating surface & drawing
         surface = pygame.Surface((BoxWidth,(height+1)*size*NumLines))
@@ -150,10 +153,23 @@ class Text():
         surface = pygame.transform.scale(surface,(surface.get_width()*amount,surface.get_height()*amount))
         return surface
 
+    def AddWordToLine(self,lines,line,NumLines,width,word):
+        for letter in word:
+            if letter != "\n":
+                line += letter
+                width += self.letters[letter].get_width() + self.spacing
+            else:
+                NumLines += 1
+                lines.append(line)
+                line = ""
+                width = 0
+        return lines,line,NumLines,width    
+
     def GetLengthString(self,string, size):
         width = 0
         for letter in string:
-            width += (self.letters[letter].get_width() + self.spacing)*size
+            if letter != "\n":
+                width += (self.letters[letter].get_width() + self.spacing)*size
         return width
 
     def draw_line(self,string,size):
@@ -161,16 +177,21 @@ class Text():
         width = 0
         height = self.letters[" "].get_height()
         for s in string:
-            width += self.letters[s].get_width()
-        width += (len(string)-1) * self.spacing
+            if s != "\n":
+                width += self.letters[s].get_width()
+        if string:    
+            width += (len(string)-1) * self.spacing
+        else:
+            width = 0
         surface = pygame.Surface((width,height))
         #blitimage
         surface.fill((0,0,0)),surface.set_colorkey((0,0,0))
         # surface.set_alpha(self.image.get_alpha())
         x_offset = 0
         for char in string:
-            surface.blit(self.letters[char],(x_offset, height - self.letters[char].get_height()))
-            x_offset += self.letters[char].get_width() + self.spacing
+            if char != "\n":
+                surface.blit(self.letters[char],(x_offset, height - self.letters[char].get_height()))
+                x_offset += self.letters[char].get_width() + self.spacing
 
         #scaling to size
         surface = self.scale_image(surface,size)
