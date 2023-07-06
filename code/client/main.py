@@ -28,9 +28,8 @@ class Main():
             self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
-        self.text = Text(self.scale,self.font,1)
-        self.words = self.text.render("there was approximately 1,230,430,251 dead orphans the wavelength of my balls is twenty",1,(100,30),(255,200,3))
-        self.words.rect.topleft = (100,200)
+
+        
     def run(self):
         while True:
             events = pygame.event.get()
@@ -42,12 +41,7 @@ class Main():
             mouse = pygame.mouse.get_pos()
 
             self.screen.fill(0)
-
             # debug(int(self.clock.get_fps()),scale)
-            self.words.update(events,mouse,self.screen)
-            # self.words.draw(self.screen)
-            pygame.draw.rect(self.screen,(0,255,0),self.words.rect,1)
-
             self.clock.tick(st.fps)
             pygame.display.update()
 

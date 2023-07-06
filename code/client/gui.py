@@ -205,3 +205,24 @@ class Text():
         img_copy.blit(surface,(0,0))
         img_copy.set_colorkey((0,0,0))
         return img_copy
+    
+def Button():
+    def __init__(self,pos,size,colour,icon,func=None):
+        self.rect = pygame.Rect((0,0),size)
+        self.rect.center = pos
+        self.image = pygame.Surface(size)
+        self.image.fill(colour)
+        self.image.blit(icon,(size[0]/2 - icon.get_width()/2,))
+        self.func = func
+        self.mask = pygame.mask.from_surface(self.image)
+        self.outline =  [(coord[0] + self.rect.topleft[0], coord[1] + self.rect.topleft[1])for coord in self.mask.outline()]
+
+    def update(self,events,mouse,args):
+        if self.rect.collidepoint(mouse):
+            hover = True
+
+
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == (1,0,0) and hover:
+                self.func(*args)
+
