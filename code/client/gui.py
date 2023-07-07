@@ -95,6 +95,7 @@ class Text():
         #scaling to scale
         surface = self.scale_image(surface,self.scale)
 
+        surface.set_colorkey(0)
         if FixedTextbox:
             _class = TextBox(surface,pygame.Surface((box[0]*self.scale,box[1]*self.scale)))
         else:
@@ -218,8 +219,8 @@ class Button():
         self.down = False
         self.dark = pygame.Surface(size,pygame.SRCALPHA)
         self.dark.fill((0,0,0,100))
-##        self.mask = pygame.mask.from_surface(self.image)
-##        self.outline =  [(coord[0] + self.rect.topleft[0], coord[1] + self.rect.topleft[1])for coord in self.mask.outline()]
+        self.mask = pygame.mask.from_surface(self.bimage)
+        self.outline =  [coord for coord in self.mask.outline()]
 
     def update(self,events,mouse,args = None):
         hover = False
@@ -227,7 +228,8 @@ class Button():
             hover = True
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
-##                self.func(*args)
+                if args != None:
+                    self.func(*args)
                 self.down = True
             if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and hover:
                 self.down = False
@@ -237,6 +239,9 @@ class Button():
             self.image.blit(self.dark,(0,0))
         else:
             self.image = self.bimage.copy()
+
+        if hover:
+            pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
 
 
 
