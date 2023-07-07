@@ -27,9 +27,9 @@ class Main():
         else:
             self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
-        self.font = pygame.image.load('graphics/font_sheet.png').convert()
-
-        
+        self.font = pygame.image.load('../../graphics/font_sheet.png').convert()
+        self.text = Text(scale,self.font,1)
+        self.button = Button((700,400),(300,80),(70,70,70),self.text.render('button',1).image)
     def run(self):
         while True:
             events = pygame.event.get()
@@ -39,8 +39,10 @@ class Main():
                     exit()
 
             mouse = pygame.mouse.get_pos()
+            self.button.update(events,mouse)
 
             self.screen.fill(0)
+            self.screen.blit(self.button.image,self.button.rect)
             # debug(int(self.clock.get_fps()),scale)
             self.clock.tick(st.fps)
             pygame.display.update()
