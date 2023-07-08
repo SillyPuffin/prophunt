@@ -33,8 +33,11 @@ class Main():
         self.colour = (100,200,1)
         self.tbox = self.text.render('balls\n and cock',1,(100,0))
         self.tbox.rect.topleft = (600,200)
-    def changebg(self,colour):
-        self.colour = (random.randint(1,255),random.randint(1,255),random.randint(1,255))
+        self.boxes = []
+    def changebg(self):
+        newbox = self.text.render('cheese',1)
+        newbox.rect.topleft = (random.randint(0,2000),random.randint(0,1000))
+        self.boxes.append(newbox)
     def run(self):
         while True:
             events = pygame.event.get()
@@ -44,11 +47,12 @@ class Main():
                     exit()
 
             mouse = pygame.mouse.get_pos()
-            self.button.update(events,mouse,[(100,0,0)])
+            self.button.update(events,mouse,[])
 
             self.screen.fill(self.colour)
             self.screen.blit(self.button.image,self.button.rect)
-            self.tbox.draw(self.screen)
+            for box in self.boxes:
+                box.draw(self.screen)
             debug(int(self.clock.get_fps()),scale)
             self.clock.tick(st.fps)
             pygame.display.update()

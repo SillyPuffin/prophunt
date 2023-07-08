@@ -226,6 +226,8 @@ class Button():
         hover = False
         if self.rect.collidepoint(mouse):
             hover = True
+        if hover == False:
+            self.down = False
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
                 if args != None:
