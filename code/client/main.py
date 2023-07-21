@@ -29,7 +29,7 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(scale,self.font,1)
-        self.button = Button((700,400),(300,80),(70,70,70),self.text.render('button',1).image,self.changebg)
+        self.button = Button((700,400),(300,80),(70,70,70),self.text.render('press for cheese',1).image,self.changebg)
         self.colour = (100,200,1)
         self.tbox = self.text.render('balls\n and cock',1,(100,0))
         self.tbox.rect.topleft = (600,200)
