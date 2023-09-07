@@ -209,20 +209,26 @@ class Text():
         return img_copy
     
 class Button():
-    def __init__(self,pos,size,colour,icon,func=None):
+    def __init__(self,pos,size,colour,icon,func=None,child_group=None):
         self.rect = pygame.Rect((0,0),size)
         self.rect.center = pos
+
         self.bimage = pygame.Surface(size)
         self.bimage.fill(colour)
         self.bimage.blit(icon,(size[0]/2 - icon.get_width()/2,size[1]/2 - icon.get_height()/2))
+
         self.func = func
         self.down = False
+
         self.dark = pygame.Surface(size,pygame.SRCALPHA)
         self.dark.fill((0,0,0,100))
         self.mask = pygame.mask.from_surface(self.bimage)
         self.outline =  [coord for coord in self.mask.outline()]
 
-    def update(self,events,mouse,args = None):
+        self.type = 'button'
+        self.child_group = child_group
+
+    def update(self,events,mouse):
         hover = False
         if self.rect.collidepoint(mouse):
             hover = True
@@ -230,8 +236,10 @@ class Button():
             self.down = False
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
-                if args != None:
-                    self.func(*args)
+                if self.child_group:
+                    self.func(self.child_group)
+                elif self.func:
+                    self.func()
                 self.down = True
             if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and hover:
                 self.down = False
