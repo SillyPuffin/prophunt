@@ -228,7 +228,7 @@ class Button():
         self.type = 'button'
         self.child_group = child_group
 
-    def update(self,events,mouse):
+    def update(self,events,mouse,game=None):
         hover = False
         if self.rect.collidepoint(mouse):
             hover = True
@@ -238,6 +238,8 @@ class Button():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
                 if self.child_group:
                     self.func(self.child_group)
+                elif game:
+                    self.func(game)
                 elif self.func:
                     self.func()
                 self.down = True
