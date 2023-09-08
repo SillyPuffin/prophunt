@@ -39,17 +39,18 @@ class Main():
     def init_menu_groups(self):
         self.menu_groups = {
             'main_group':[
-                Button((window_size[0]/2,window_size[1]/2-50),(350,90),(0,100,200),self.text.render('play',1,False).image,self.switch_ButtonGroup,'play_group'),
-                Button((window_size[0]/2,window_size[1]/2+50),(350,90),(0,100,200),self.text.render('level editor',1,False).image,self.switch_ButtonGroup,'LevelSelect'),
-                Button((window_size[0]/2,window_size[1]/2+150),(350,90),(0,100,200),self.text.render('quit',1,False).image,QuitGame)
+                Button((st.base_size[0]/2,st.base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
+                Button((st.base_size[0]/2,st.base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,self.switch_ButtonGroup,'LevelSelect'),
+                Button((st.base_size[0]/2,st.base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
                 ],
             'play_group':[
-                Button((window_size[0]/2+100,window_size[1]/2),(200,70),(0,100,200),self.text.render('join',1,False).image),
-                Button((window_size[0]/2-100,window_size[1]/2),(200,70),(0,100,200),self.text.render('host',1,False).image),
-                Button((window_size[0]/2+100,window_size[1]/2+400),(200,70),(0,100,200),self.text.render('back',1,False).image,self.switch_ButtonGroup,'main_group')
+                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
+                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
+                Button((st.base_size[0]/2,st.base_size[1]/2-20),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
                 ],
             'LevelSelect':[
-                Button((window_size[0]/2+100,window_size[1]/2+400),(200,70),(0,100,200),self.text.render('back',1,False).image,self.switch_ButtonGroup,'main_group')
+                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
+                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale)
             ]
 
         }

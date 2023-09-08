@@ -209,18 +209,21 @@ class Text():
         return img_copy
     
 class Button():
-    def __init__(self,pos,size,colour,icon,func=None,child_group=None):
-        self.rect = pygame.Rect((0,0),size)
-        self.rect.center = pos
+    def __init__(self,pos,size,colour,icon,scale,func=None,child_group=None):
+        UpScaledSize = (size[0]*scale,size[1]*scale)
+        self.rect = pygame.Rect((0,0),UpScaledSize)
+        self.rect.center = (pos[0]*scale,pos[1]*scale)
 
-        self.bimage = pygame.Surface(size)
+        self.bimage = pygame.Surface(UpScaledSize)
         self.bimage.fill(colour)
-        self.bimage.blit(icon,(size[0]/2 - icon.get_width()/2,size[1]/2 - icon.get_height()/2))
+        self.bimage.blit(icon,(UpScaledSize[0]/2 - icon.get_width()/2,UpScaledSize[1]/2 - icon.get_height()/2))
 
         self.func = func
         self.down = False
+        self.hovered = False
+        self.selected = False
 
-        self.dark = pygame.Surface(size,pygame.SRCALPHA)
+        self.dark = pygame.Surface(UpScaledSize,pygame.SRCALPHA)
         self.dark.fill((0,0,0,100))
         self.mask = pygame.mask.from_surface(self.bimage)
         self.outline =  [coord for coord in self.mask.outline()]
@@ -234,17 +237,25 @@ class Button():
             hover = True
         if hover == False:
             self.down = False
+            self.hovered = False
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
+                self.down = True
+                self.hovered= True
+                self.selected = True
+            if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and self.hovered == True and hover:
                 if self.child_group:
                     self.func(self.child_group)
-                elif game:
+                elif game and self.func:
                     self.func(game)
                 elif self.func:
                     self.func()
-                self.down = True
-            if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and hover:
+                
+                self.selected = False
+                self.hovered = False
                 self.down = False
+            elif  event.type== pygame.MOUSEBUTTONUP and event.button == 1:
+                self.selected = False
 
         if self.down:
             self.image = self.bimage.copy()
@@ -252,7 +263,7 @@ class Button():
         else:
             self.image = self.bimage.copy()
 
-        if hover:
+        if hover or self.selected:
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
 
 
