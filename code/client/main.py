@@ -44,13 +44,13 @@ class Main():
                 Button((st.base_size[0]/2,st.base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
                 ],
             'play_group':[
-                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
-                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
-                Button((st.base_size[0]/2,st.base_size[1]/2-20),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
+                Button((st.base_size[0]/2,st.base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
+                Button((st.base_size[0]/2,st.base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
+                Button((st.base_size[0]/2,st.base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
                 ],
             'LevelSelect':[
-                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
-                Button((st.base_size[0]/2,st.base_size[1]/2-10),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale)
+                Button((st.base_size[0]-35,st.base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
+                Button((35,st.base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale)
             ]
 
         }
