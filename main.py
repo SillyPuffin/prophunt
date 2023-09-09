@@ -1,6 +1,7 @@
 import pygame; from pygame.locals import *
 import random
 from sys import exit
+from os import walk
 
 from scripts import *
 
@@ -35,6 +36,12 @@ class Main():
         self.init_menu_groups()
 
     def init_menu_groups(self):
+        data = list(walk('levels'))[0][2]
+        levels = []
+        for name in data:
+            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale)
+            levels.append(newbutton)
+        
         self.menu_groups = {
             'main_group':Column((100,135),5,self.scale,'vertical',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
@@ -49,6 +56,9 @@ class Main():
             'LevelSelect':UiContainter([
                 Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
                 Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel),
+                Column((280,50),7,self.scale,'horizontal',[
+                    *levels
+                ])
                 ])
             
         }
