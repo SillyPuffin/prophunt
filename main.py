@@ -4,11 +4,6 @@ from sys import exit
 
 from scripts import *
 
-# import settings as st
-# from gui import *
-# from utils import debug
-# from ButtonScripts import *
-
 pygame.init()
 
 sinfo = pygame.display.Info()
