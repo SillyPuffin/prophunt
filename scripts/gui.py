@@ -226,7 +226,7 @@ class Button():
         self.dark = pygame.Surface(UpScaledSize,pygame.SRCALPHA)
         self.dark.fill((0,0,0,100))
         self.mask = pygame.mask.from_surface(self.bimage)
-        self.outline =  [coord for coord in self.mask.outline()]
+        self.outline =  [coord for coord in self.mask.outline(4)]
 
         self.type = 'button'
         self.child_group = child_group
@@ -266,6 +266,79 @@ class Button():
         if hover or self.selected:
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
 
+    def draw(self,screen):
+        screen.blit(self.image,self.rect)
+
+#can make vertical and horizontal columns
+class Column():
+    def __init__(self,pos,spacing,scale,direction, elements = None):
+        self.pos = (pos[0]*scale,pos[1]*scale)
+        self.direction = direction
+        self.elements = []
+        self.type = 'column'
+        self.spacing = spacing * scale
+        self.height = 0
+        self.width = 0
+
+        if elements != None:
+            self.AddElement(elements)
+
+    def AddElement(self,elements): 
+        if type(elements) == list:
+            for item in elements:
+                self.elements.append(item)
+        elif hasattr(elements,'__dict__'):
+            self.elements.append(elements)
+
+        #column
+        if self.direction == 'vertical':
+            self.height = 0
+            for item in self.elements:
+                item.rect.centerx = self.pos[0]
+                self.height += item.rect.height
+            self.height += self.spacing*(len(self.elements)-1)
+
+            offset = int(self.height/2)
+            interval = int(self.height/len(self.elements))
+            for count,item in enumerate(self.elements):
+                item.rect.centery = interval*count + (self.pos[1]-offset)
+        #row
+        elif self.direction == 'horizontal':
+            self.width = 0
+            for item in self.elements:
+                item.rect.centery = self.pos[1]
+                self.width += item.rect.width
+            self.width += self.spacing*(len(self.elements)-1)
+            offset = int(self.width/2)
+            interval = int(self.width/len(self.elements))
+            for count,item in enumerate(self.elements):
+                item.rect.centerx = interval*count + (self.pos[0]-offset)
+
+    def update(self,events, mouse, game= None):
+        for item in self.elements:
+            item.update(events,mouse,game)
+
+    def draw(self,screen):
+        for item in self.elements:
+            screen.blit(item.image,item.rect)
+
+class UiContainter():
+    def __init__(self, elements):
+        self.elements = []
+        self.type = 'container'
+        if type(elements) == list:
+            for item in elements:
+                self.elements.append(item)
+        elif hasattr(elements,'__dict__'):
+            self.elements.append(elements)
+    
+    def update(self,events, mouse, game=None):
+        for item in self.elements:
+            item.update(events,mouse,game)
+    
+    def draw(self,screen):
+        for item in self.elements:
+            item.draw(screen)
 
 
 

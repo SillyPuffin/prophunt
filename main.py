@@ -36,53 +36,53 @@ class Main():
 
     def init_menu_groups(self):
         self.menu_groups = {
-            'main_group':[
+            'main_group':Column((100,135),5,self.scale,'vertical',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,self.switch_ButtonGroup,'LevelSelect'),
                 Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
-                ],
-            'play_group':[
+                ]),
+            'play_group':Column((100,135),5,self.scale,"vertical",[
                 Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
-                ],
-            'LevelSelect':[
+                ]),
+            'LevelSelect':UiContainter([
                 Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
-                Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel)
-            ]
-
+                Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel),
+                ])
+            
         }
-        self.active_group = self.menu_groups['main_group'][:]
+
+        self.active_group = self.menu_groups['main_group']
 
     def switch_ButtonGroup(self,group):
-        self.active_group = self.menu_groups[group][:]
-        for item in self.active_group:
-            if item.type == 'button':
-                item.update(self.events,self.mouse)
+        self.active_group = self.menu_groups[group]
+        self.active_group.update(self.events,self.mouse,self)
 
     def run(self):
         while True:
             self.events = pygame.event.get()
+            if self.quit == True:
+                pygame.quit()
+                exit()
             for event in self.events:
-                if event.type == QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) or self.quit == True:
+                if event.type == QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     pygame.quit()
                     exit()
+            
 
             self.mouse = pygame.mouse.get_pos()
 
             #updating
             ####menu
             if self.GameState == 'menu':
-                for item in self.active_group:
-                    if item.type == 'button':
-                        item.update(self.events,self.mouse,self)
+                self.active_group.update(self.events,self.mouse,self)
                 
             #drawing
             self.screen.fill('red')
             ####menu 
             if self.GameState == 'menu':
-                for item in self.active_group:
-                    self.screen.blit(item.image,item.rect)
+                self.active_group.draw(self.screen)
 
             #updating & framerate
             debug(int(self.clock.get_fps()),scale)
