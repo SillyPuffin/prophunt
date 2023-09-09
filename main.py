@@ -2,10 +2,7 @@ import pygame; from pygame.locals import *
 import random
 from sys import exit
 
-from scripts.gui import *
-import scripts.settings as st
-from scripts.utils import debug
-from scripts.ButtonScripts import *
+from scripts import *
 
 # import settings as st
 # from gui import *
@@ -16,15 +13,15 @@ pygame.init()
 
 sinfo = pygame.display.Info()
 screensize = (sinfo.current_w,sinfo.current_h)
-remainder = max(screensize) % st.base_size[screensize.index(max(screensize))]
+remainder = max(screensize) % base_size[screensize.index(max(screensize))]
 if remainder == 0:
     exact = True
 else:
     exact = False
-scale = max(screensize)// st.base_size[screensize.index(max(screensize))]
+scale = max(screensize)// base_size[screensize.index(max(screensize))]
 if scale > 4:
     scale = 4
-window_size = (st.base_size[0]*scale,st.base_size[1]*scale)
+window_size = (base_size[0]*scale,base_size[1]*scale)
 
 #main class
 class Main():
@@ -45,18 +42,18 @@ class Main():
     def init_menu_groups(self):
         self.menu_groups = {
             'main_group':[
-                Button((st.base_size[0]/2,st.base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
-                Button((st.base_size[0]/2,st.base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,self.switch_ButtonGroup,'LevelSelect'),
-                Button((st.base_size[0]/2,st.base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,self.switch_ButtonGroup,'LevelSelect'),
+                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
                 ],
             'play_group':[
-                Button((st.base_size[0]/2,st.base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
-                Button((st.base_size[0]/2,st.base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
-                Button((st.base_size[0]/2,st.base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
+                Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
                 ],
             'LevelSelect':[
-                Button((st.base_size[0]-35,st.base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
-                Button((35,st.base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel)
+                Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
+                Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel)
             ]
 
         }
@@ -94,7 +91,7 @@ class Main():
 
             #updating & framerate
             debug(int(self.clock.get_fps()),scale)
-            self.clock.tick(st.fps)
+            self.clock.tick(fps)
             pygame.display.update()
 
 #running
