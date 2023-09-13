@@ -39,22 +39,22 @@ class Main():
         data = list(walk('levels'))[0][2]
         levels = []
         for name in data:
-            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale)
+            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,f'{name}')
             levels.append(newbutton)
         
         self.menu_groups = {
             'main_group':Column((100,135),5,self.scale,'vertical',[
-                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,self.switch_ButtonGroup,'play_group'),
-                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,self.switch_ButtonGroup,'LevelSelect'),
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,switch_ButtonGroup,'play_group'),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,switch_ButtonGroup,'LevelSelect'),
                 Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
                 ]),
             'play_group':Column((100,135),5,self.scale,"vertical",[
                 Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group')
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group')
                 ]),
             'LevelSelect':UiContainter([
-                Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,self.switch_ButtonGroup,'main_group'),
+                Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group'),
                 Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel),
                 Column((280,50),7,self.scale,'horizontal',[
                     *levels
@@ -64,10 +64,6 @@ class Main():
         }
 
         self.active_group = self.menu_groups['main_group']
-
-    def switch_ButtonGroup(self,group):
-        self.active_group = self.menu_groups[group]
-        self.active_group.update(self.events,self.mouse,self)
 
     def run(self):
         while True:

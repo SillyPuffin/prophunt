@@ -209,7 +209,7 @@ class Text():
         return img_copy
     
 class Button():
-    def __init__(self,pos,size,colour,icon,scale,func=None,child_group=None):
+    def __init__(self,pos,size,colour,icon,scale,func=None,arg=None):
         UpScaledSize = (size[0]*scale,size[1]*scale)
         self.rect = pygame.Rect((0,0),UpScaledSize)
         self.rect.center = (pos[0]*scale,pos[1]*scale)
@@ -229,7 +229,7 @@ class Button():
         self.outline =  [coord for coord in self.mask.outline(4)]
 
         self.type = 'button'
-        self.child_group = child_group
+        self.arg = arg
 
     def update(self,events,mouse,game=None):
         hover = False
@@ -244,12 +244,10 @@ class Button():
                 self.hovered= True
                 self.selected = True
             if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and self.hovered == True and hover:
-                if self.child_group:
-                    self.func(self.child_group)
-                elif game and self.func:
-                    self.func(game)
+                if self.arg:
+                    self.func(game,self.arg)
                 elif self.func:
-                    self.func()
+                    self.func(game)
                 
                 self.selected = False
                 self.hovered = False
