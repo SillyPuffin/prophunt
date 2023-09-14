@@ -19,6 +19,8 @@ if scale > 4:
     scale = 4
 window_size = (base_size[0]*scale,base_size[1]*scale)
 
+#hello i like cheese
+
 #main class
 class Main():
     def __init__(self):
