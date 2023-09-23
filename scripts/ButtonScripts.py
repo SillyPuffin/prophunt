@@ -5,9 +5,11 @@ def QuitGame(game):
 
 def CreateNewLevel(game):
     game.GameState = 'editor'
+    game.CreateEditor()
 
 def OpenLevel(game,level):
-    print(level)
+    game.GameSate = 'editor'
+    game.CreateEditor(level)
 
 def switch_ButtonGroup(game,group):
     game.active_group = game.menu_groups[group]

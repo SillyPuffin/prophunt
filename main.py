@@ -35,6 +35,7 @@ class Main():
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(scale,self.font,1)
+        self.editor = None
         self.init_menu_groups()
 
     def init_menu_groups(self):
@@ -67,6 +68,10 @@ class Main():
 
         self.active_group = self.menu_groups['main_group']
 
+    def CreateEditor(self,level=None):
+        self.editor = None
+        self.editor = Editor(level)
+
     def run(self):
         while True:
             self.events = pygame.event.get()
@@ -85,6 +90,8 @@ class Main():
             ####menu
             if self.GameState == 'menu':
                 self.active_group.update(self.events,self.mouse,self)
+            elif self.GameState == 'editor':
+                self.editor.run(self,self.screen)
                 
             #drawing
             self.screen.fill('red')
