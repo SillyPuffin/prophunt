@@ -8,7 +8,7 @@ def CreateNewLevel(game):
     game.CreateEditor()
 
 def OpenLevel(game,level):
-    game.GameSate = 'editor'
+    game.GameState = 'editor'
     game.CreateEditor(level)
 
 def switch_ButtonGroup(game,group):

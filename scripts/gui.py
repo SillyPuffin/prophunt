@@ -244,7 +244,7 @@ class Button():
                 self.hovered= True
                 self.selected = True
             if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and self.hovered == True and hover:
-                if self.arg:
+                if self.arg != None:
                     self.func(game,self.arg)
                 elif self.func:
                     self.func(game)
@@ -263,6 +263,12 @@ class Button():
 
         if hover or self.selected:
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
+
+    def collidepoint(self,point):
+        if self.rect.collidepoint(point):
+            return True
+        else:
+            return False
 
     def draw(self,screen):
         screen.blit(self.image,self.rect)
@@ -312,6 +318,13 @@ class Column():
             for count,item in enumerate(self.elements):
                 item.rect.centerx = interval*count + (self.pos[0]-offset)
 
+    def collidepoint(self,point):
+        for item in self.elements:
+            if item.collidepoint(point):
+                return True
+            else:
+                return False
+
     def update(self,events, mouse, game= None):
         for item in self.elements:
             item.update(events,mouse,game)
@@ -334,6 +347,13 @@ class UiContainter():
         for item in self.elements:
             item.update(events,mouse,game)
     
+    def collidepoint(self,point):
+        for item in self.elements:
+            if item.collidepoint(point):
+                return True
+            else:
+                return False
+
     def draw(self,screen):
         for item in self.elements:
             item.draw(screen)

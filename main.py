@@ -42,7 +42,9 @@ class Main():
         data = list(walk('levels'))[0][2]
         levels = []
         for name in data:
-            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,f'{name}')
+            with open(f'levels\{name}') as f:
+                level_data = f.read()
+            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,level_data)
             levels.append(newbutton)
         
         self.menu_groups = {
@@ -70,7 +72,7 @@ class Main():
 
     def CreateEditor(self,level=None):
         self.editor = None
-        self.editor = Editor(level)
+        self.editor = Editor(self.screen,level)
 
     def run(self):
         while True:
@@ -85,18 +87,18 @@ class Main():
             
 
             self.mouse = pygame.mouse.get_pos()
-
             #updating
             ####menu
             if self.GameState == 'menu':
                 self.active_group.update(self.events,self.mouse,self)
             elif self.GameState == 'editor':
-                self.editor.run(self,self.screen)
+                self.editor.run(self,self.events)
                 
             #drawing
-            self.screen.fill('red')
+            
             ####menu 
             if self.GameState == 'menu':
+                self.screen.fill('red')
                 self.active_group.draw(self.screen)
 
             #updating & framerate
