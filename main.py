@@ -72,7 +72,7 @@ class Main():
 
     def CreateEditor(self,level=None):
         self.editor = None
-        self.editor = Editor(self.screen,level)
+        self.editor = Editor(self,self.screen,level)
 
     def run(self):
         while True:
