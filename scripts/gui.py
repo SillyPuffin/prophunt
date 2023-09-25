@@ -35,7 +35,7 @@ class TextBox():
 
 class Text():
     def __init__(self,scale,image,spacing):
-        order = " abcdefghijklmnopqrstuvwxyz,'.?!1234567890/\()"
+        order = " abcdefghijklmnopqrstuvwxyz,'.?!1234567890/\()[]:-"
         self.letters = {}
         self.lstart = None
         self.scale = scale

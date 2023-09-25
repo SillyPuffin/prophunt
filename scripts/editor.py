@@ -100,7 +100,7 @@ class Editor():
                     self.coords = self.text.render(f'{self.tile.x} {self.tile.y}',0.8)
 
         if self.coords:
-            self.display.blit(self.coords.image,vec(mouse_pos())-(0,scale(self.scale,-5)))
+            self.display.blit(self.coords.image,vec(mouse_pos())-(self.coords.image.get_width()/2,scale(self.scale,-5)))
 
     def run(self,game,events):
         self.eventloop(events)
