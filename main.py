@@ -47,11 +47,14 @@ class Main():
             newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,level_data)
             levels.append(newbutton)
         
+        box = self.text.render('hello my name is jeff and i like to eat cheese on wednesdays',1,(50,20))
+        
         self.menu_groups = {
             'main_group':Column((100,135),5,self.scale,'vertical',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,switch_ButtonGroup,'play_group'),
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,switch_ButtonGroup,'LevelSelect'),
-                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
+                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame),
+                box
                 ]),
             'play_group':Column((100,135),5,self.scale,"vertical",[
                 Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),

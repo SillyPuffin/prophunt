@@ -18,7 +18,7 @@ class TextBox():
         self.scroll = 0
         self.max_scroll= -abs(self.box.get_height() - self.texts.get_height())
 
-    def update(self,events,mouse,screen):
+    def update(self,events,mouse,game):
         if self.rect.collidepoint(mouse):
             for event in events:
                 if event.type == pygame.MOUSEWHEEL:
@@ -31,6 +31,8 @@ class TextBox():
         self.box.fill(0)
         self.box.blit(self.texts,(0,self.scroll))
         self.image = self.box.copy()
+
+    def draw(self,screen):
         screen.blit(self.image,self.rect)
 
 class Text():
