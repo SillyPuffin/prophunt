@@ -3,6 +3,7 @@ import math,random
 import time
 from pygame.mouse import get_pressed as mouse_buttons
 from pygame.mouse import get_pos as mouse_pos
+from pygame.key import get_pressed as keys
 from pygame.image import load as load
 from pygame.math import Vector2 as vec
 from .properties import *
@@ -74,33 +75,19 @@ class Editor():
         
         self.display.blit(self.grid,(0,0))
 
-    def GetTilePos(self):
-        pos = vec(mouse_pos()) - self.origin
+    def GetTilePos(self,pos):
+        pos = vec(pos) - self.origin
         ts = scale(self.scale,tile_size)
         x,y = int(pos.x//ts),int(pos.y//ts)
         return vec(x,y)
 
     def tiledetails(self):
         pos = vec(mouse_pos())
-        if pos != self.prev:
-            self.prev = pos
-            self.mousestill = None
-            self.tile = None
-            self.coords = None
-        elif pos == self.prev:
-            if self.mousestill == None:
-                self.mousestill = time.time()
-
-
-        if self.mousestill != None:
-            current = time.time()
-            if current - self.mousestill >= 1:
-                if not self.tile:
-                    self.tile = self.GetTilePos()
-                    self.coords = self.text.render(f'{self.tile.x} {self.tile.y}',0.8)
+        self.tile = self.GetTilePos(pos)
+        self.coords = self.text.render(f'{int(self.tile.x)}, {int(self.tile.y)}',0.5)
 
         if self.coords:
-            self.display.blit(self.coords.image,vec(mouse_pos())-(self.coords.image.get_width()/2,scale(self.scale,-5)))
+            self.display.blit(self.coords.image,(self.WINDOWSIZE[0]-self.coords.image.get_width(),0))
 
     def run(self,game,events):
         self.eventloop(events)

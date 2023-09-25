@@ -1,4 +1,5 @@
 import pygame,math
+from .utils import *
 
 class Word_Image():
     def __init__(self,image):
@@ -76,6 +77,8 @@ class Text():
 
     def render(self,text,size=1,box = False,clr=None):
         FixedTextbox = False
+        size = size * self.scale
+        box = scale(self.scale,box)
         if not box:
             string = str(text)
             surface = self.draw_line(string,size)
@@ -95,11 +98,11 @@ class Text():
         if clr:
             surface = self.swap_pallet(surface,clr)
         #scaling to scale
-        surface = self.scale_image(surface,self.scale)
+        # surface = self.scale_image(surface,self.scale)
 
         surface.set_colorkey(0)
         if FixedTextbox:
-            _class = TextBox(surface,pygame.Surface((box[0]*self.scale,box[1]*self.scale)))
+            _class = TextBox(surface,pygame.Surface((box[0],box[1])))
         else:
             _class = Word_Image(surface)
         return _class
