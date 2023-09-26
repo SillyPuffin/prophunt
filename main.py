@@ -47,7 +47,7 @@ class Main():
             newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,level_data)
             levels.append(newbutton)
         
-        box = self.text.render('hello my name is jeff and i like to eat cheese on wednesdays',1.25,(50,20))
+        box = self.text.render('he-llo my name is jeff and i like to eat cheese on wednesdays',1.25,(50,20))
         
         self.menu_groups = {
             'main_group':Column((100,135),5,self.scale,'vertical',[
