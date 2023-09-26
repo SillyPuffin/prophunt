@@ -1,4 +1,5 @@
 import pygame,math
+from pygame.math import Vector2 as vec
 from .utils import *
 
 class Word_Image():
@@ -278,6 +279,25 @@ class Button():
     def draw(self,screen):
         screen.blit(self.image,self.rect)
 
+class Slider():
+    def __init__(self,pos,size,colour,_scale,padding=1,value=0) -> None:
+        pos = scale(_scale,pos)
+        size = scale(_scale,size)
+        self.scale = _scale
+        self.padding = padding
+        self.rect  = pygame.Rect(pos,size)
+        self.bar = pygame.Rect((vec(pos)+(padding*_scale,padding*_scale)),(vec(size)-(padding*2*_scale,padding*2*_scale)))
+        #image
+        
+        self.image = pygame.Surface(size)
+        self.image.fill(colour)
+        pygame.draw.rect(self.image,'blue',((padding*_scale,padding*_scale,),self.bar.size))
+        
+    def update(self,mouse,events,game):
+        self.bar.topleft = vec(self.rect.topleft)+(self.padding*self.scale,self.padding*self.scale)
+        
+    def draw(self,screen):
+        pass
 #can make vertical and horizontal columns
 class Column():
     def __init__(self,pos,spacing,scale,direction, elements = None):

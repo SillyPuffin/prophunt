@@ -50,11 +50,12 @@ class Main():
         box = self.text.render('he-llo my name is jeff and i like to eat cheese on wednesdays',1.25,(50,20))
         
         self.menu_groups = {
-            'main_group':Column((100,135),5,self.scale,'vertical',[
+            #button(pos,size,colour,image,scale,func,arg)
+            'main_group':Column((vec(base_size)/2),5,self.scale,'vertical',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,switch_ButtonGroup,'play_group'),
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,switch_ButtonGroup,'LevelSelect'),
-                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame),
-                box
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.scale,switch_ButtonGroup,'settings'),
+                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
                 ]),
             'play_group':Column((100,135),5,self.scale,"vertical",[
                 Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
@@ -67,7 +68,11 @@ class Main():
                 Column((280,50),7,self.scale,'horizontal',[
                     *levels
                 ])
-                ])
+                ]),
+            'settings':Column((vec(base_size)/2),5,self.scale,'vertical',[
+                Slider((0,0),(70,11),(0,200,0),self.scale,3),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group')
+            ])
             
         }
 
