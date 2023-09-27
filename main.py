@@ -70,7 +70,7 @@ class Main():
                 ])
                 ]),
             'settings':Column((vec(base_size)/2),5,self.scale,'vertical',[
-                Slider((0,0),(70,11),(0,200,0),self.scale,3),
+                Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.scale,1,[1,4],self.scale),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group')
             ])
             

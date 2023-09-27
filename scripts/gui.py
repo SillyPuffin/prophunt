@@ -1,5 +1,6 @@
 import pygame,math
 from pygame.math import Vector2 as vec
+from pygame.mouse import get_pressed as mouse_buttons
 from .utils import *
 
 class Word_Image():
@@ -280,24 +281,83 @@ class Button():
         screen.blit(self.image,self.rect)
 
 class Slider():
-    def __init__(self,pos,size,colour,_scale,padding=1,value=0) -> None:
+    def __init__(self,pos,size,colour,_scale,padding=1,value=[1,2],default=1) -> None:
+        #sizing
         pos = scale(_scale,pos)
         size = scale(_scale,size)
         self.scale = _scale
         self.padding = padding
+
+        #colours
+        self.colour = colour[0]
+        self.accent = colour[1]
+        self.barColour = colour[2]
+
+        #rect
         self.rect  = pygame.Rect(pos,size)
         self.bar = pygame.Rect((vec(pos)+(padding*_scale,padding*_scale)),(vec(size)-(padding*2*_scale,padding*2*_scale)))
+
+        #selection
+        self.baractive = False
+        self.range = max(value) - (min(value)-1)
+        self.values = value
+        if self.range > 1:
+            self.increment = self.bar.width / (self.range - 1)
+        self.offset = (default -1) * self.increment
+        self.current = default  
+
         #image
-        
-        self.image = pygame.Surface(size)
-        self.image.fill(colour)
-        pygame.draw.rect(self.image,'blue',((padding*_scale,padding*_scale,),self.bar.size))
-        
-    def update(self,mouse,events,game):
+        self.bimage = pygame.Surface(size)
+        self.bimage.fill(self.colour)
+        pygame.draw.rect(self.bimage,self.accent,((padding*_scale,padding*_scale),self.bar.size))
+        self.mask = pygame.mask.from_surface(self.bimage)
+        self.outline =  [coord for coord in self.mask.outline(2)]
+        self.image = self.bimage.copy()
+        pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
+
+    def update(self,events,mouse,game):
         self.bar.topleft = vec(self.rect.topleft)+(self.padding*self.scale,self.padding*self.scale)
+        if self.rect.collidepoint(mouse):
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN and mouse_buttons()[0]:
+                    self.baractive = True
         
+        if not mouse_buttons()[0]:
+            self.baractive = False
+        
+        if self.baractive:
+            self.offset = vec(mouse).x - self.bar.topleft[0]
+            if self.offset < 0:
+                self.offset = 0
+            elif self.offset > self.bar.width:
+                self.offset = self.bar.width
+
+        #getting the value from the bar
+        
+            fullness = self.offset / self.increment #how many values it is along the slider
+            number = round(fullness) #round to int
+            self.current = min(self.values) + number
+            
+        if self.rect.collidepoint(mouse):
+            self.image = self.bimage.copy()
+            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
+            self.drawoutline()
+            amount = game.text.render(f'gui scale:{self.current}',1).image
+            self.image.blit(amount,(self.rect.width/2-amount.get_width()/2,self.rect.height/2-amount.get_height()/2))
+        else:
+            self.image = self.bimage.copy()
+            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
+            amount = game.text.render(f'gui scale:{self.current}',1).image
+            self.image.blit(amount,(self.rect.width/2-amount.get_width()/2,self.rect.height/2-amount.get_height()/2))
+        
+
+        print(self.current)
+
+    def drawoutline(self):
+        pygame.draw.lines(self.image,'white',True,self.outline)
+
     def draw(self,screen):
-        pass
+        screen.blit(self.image,self.rect)
 #can make vertical and horizontal columns
 class Column():
     def __init__(self,pos,spacing,scale,direction, elements = None):
