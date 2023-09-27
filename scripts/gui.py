@@ -387,9 +387,9 @@ class Column():
             for item in self.elements:
                 item.rect.centerx = self.pos[0]
                 self.height += item.rect.height
+            box = self.height / len(self.elements)
             self.height += self.spacing*(len(self.elements)-1)
-
-            offset = int(self.height/2)
+            offset = int((self.height-box)/2)
             interval = int(self.height/len(self.elements))
             for count,item in enumerate(self.elements):
                 item.rect.centery = interval*count + (self.pos[1]-offset)
@@ -399,8 +399,9 @@ class Column():
             for item in self.elements:
                 item.rect.centery = self.pos[1]
                 self.width += item.rect.width
+            box = self.width / len(self.elements)
             self.width += self.spacing*(len(self.elements)-1)
-            offset = int(self.width/4)
+            offset = int((self.width-box)/2)
             interval = int(self.width/len(self.elements))
             for count,item in enumerate(self.elements):
                 item.rect.centerx = interval*count + (self.pos[0]-offset)

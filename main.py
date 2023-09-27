@@ -48,7 +48,7 @@ class Main():
         data = list(walk('levels'))[0][2]
         levels = []
         for name in data:
-            with open(f'levels\{name}') as f:
+            with open(f'levels/{name}') as f:
                 level_data = f.read()
             newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,OpenLevel,level_data)
             levels.append(newbutton)
