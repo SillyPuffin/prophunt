@@ -219,7 +219,7 @@ class Button():
     def __init__(self,pos,size,colour,icon,scale,func=None,arg=None):
         UpScaledSize = (size[0]*scale,size[1]*scale)
         self.rect = pygame.Rect((0,0),UpScaledSize)
-        self.rect.center = (pos[0]*scale,pos[1]*scale)
+        self.rect.center = (pos[0],pos[1])
 
         self.bimage = pygame.Surface(UpScaledSize)
         self.bimage.fill(colour)
@@ -304,7 +304,8 @@ class Slider():
         if self.range > 1:
             self.increment = self.bar.width / (self.range - 1)
         self.offset = (default -1) * self.increment
-        self.current = default  
+        self.current = default
+        self.barvalue = default  
 
         #image
         self.bimage = pygame.Surface(size)
@@ -321,10 +322,9 @@ class Slider():
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN and mouse_buttons()[0]:
                     self.baractive = True
-        
-        if not mouse_buttons()[0]:
-            self.baractive = False
-        
+                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    self.barvalue = self.current
+
         if self.baractive:
             self.offset = vec(mouse).x - self.bar.topleft[0]
             if self.offset < 0:
@@ -338,6 +338,10 @@ class Slider():
             number = round(fullness) #round to int
             self.current = min(self.values) + number
             
+        
+        if not mouse_buttons()[0]:
+            self.baractive = False
+
         if self.rect.collidepoint(mouse):
             self.image = self.bimage.copy()
             pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
@@ -349,19 +353,17 @@ class Slider():
             pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
             amount = game.text.render(f'gui scale:{self.current}',1).image
             self.image.blit(amount,(self.rect.width/2-amount.get_width()/2,self.rect.height/2-amount.get_height()/2))
-        
-
-        print(self.current)
 
     def drawoutline(self):
         pygame.draw.lines(self.image,'white',True,self.outline)
 
     def draw(self,screen):
         screen.blit(self.image,self.rect)
+
 #can make vertical and horizontal columns
 class Column():
     def __init__(self,pos,spacing,scale,direction, elements = None):
-        self.pos = (pos[0]*scale,pos[1]*scale)
+        self.pos = pos
         self.direction = direction
         self.elements = []
         self.type = 'column'
@@ -398,7 +400,7 @@ class Column():
                 item.rect.centery = self.pos[1]
                 self.width += item.rect.width
             self.width += self.spacing*(len(self.elements)-1)
-            offset = int(self.width/2)
+            offset = int(self.width/4)
             interval = int(self.width/len(self.elements))
             for count,item in enumerate(self.elements):
                 item.rect.centerx = interval*count + (self.pos[0]-offset)

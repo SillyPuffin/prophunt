@@ -14,10 +14,10 @@ if remainder == 0:
     exact = True
 else:
     exact = False
-scale = max(screensize)// base_size[screensize.index(max(screensize))]
-if scale > 4:
-    scale = 4
-window_size = (base_size[0]*scale,base_size[1]*scale)
+Scale = max(screensize)// base_size[screensize.index(max(screensize))]
+if Scale > 4:
+    Scale = 4
+window_size = (base_size[0]*Scale,base_size[1]*Scale)
 
 #hello i like cheese
 
@@ -27,16 +27,22 @@ class Main():
         self.GameState = 'menu'
         self.size = (window_size)
         self.quit = False
-        self.scale = scale
+        self.scale = Scale
+        self.guiscale = self.scale
         if exact:
             self.screen = pygame.display.set_mode(self.size,pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode(self.size)
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
-        self.text = Text(scale,self.font,1)
+        self.text = Text(self.guiscale,self.font,1)
         self.editor = None
         self.init_menu_groups()
+
+    def regenMenus(self,activegroup):
+        self.text = Text(self.guiscale,self.font,1)
+        self.init_menu_groups()
+        self.active_group = self.menu_groups[activegroup]
 
     def init_menu_groups(self):
         data = list(walk('levels'))[0][2]
@@ -44,34 +50,34 @@ class Main():
         for name in data:
             with open(f'levels\{name}') as f:
                 level_data = f.read()
-            newbutton = Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render(name,1,False).image,self.scale,OpenLevel,level_data)
+            newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,OpenLevel,level_data)
             levels.append(newbutton)
         
         box = self.text.render('he-llo my name is jeff and i like to eat cheese on wednesdays',1.25,(50,20))
         
         self.menu_groups = {
             #button(pos,size,colour,image,scale,func,arg)
-            'main_group':Column((vec(base_size)/2),5,self.scale,'vertical',[
-                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.scale,switch_ButtonGroup,'play_group'),
-                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.scale,switch_ButtonGroup,'LevelSelect'),
-                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.scale,switch_ButtonGroup,'settings'),
-                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.scale,QuitGame)
+            'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical',[
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.guiscale,switch_ButtonGroup,'play_group'),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'LevelSelect'),
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.guiscale,switch_ButtonGroup,'settings'),
+                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.guiscale,QuitGame)
                 ]),
-            'play_group':Column((100,135),5,self.scale,"vertical",[
-                Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.scale),
-                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.scale),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group')
+            'play_group':Column((100,135),5,self.guiscale,"vertical",[
+                Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.guiscale),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.guiscale),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
                 ]),
             'LevelSelect':UiContainter([
-                Button((base_size[0]-35,base_size[1]-9),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group'),
-                Button((35,base_size[1]-9),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.scale,CreateNewLevel),
-                Column((280,50),7,self.scale,'horizontal',[
+                Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
+                Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
+                Column((window_size[0]/2,50),7,self.guiscale,'horizontal',[
                     *levels
                 ])
                 ]),
-            'settings':Column((vec(base_size)/2),5,self.scale,'vertical',[
-                Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.scale,1,[1,4],self.scale),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.scale,switch_ButtonGroup,'main_group')
+            'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',[
+                Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,4],self.guiscale),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
             ])
             
         }
@@ -98,6 +104,9 @@ class Main():
             #updating
             ####menu
             if self.GameState == 'menu':
+                if self.guiscale != self.menu_groups['settings'].elements[0].barvalue:
+                    self.guiscale = self.menu_groups['settings'].elements[0].barvalue
+                    self.regenMenus(list(self.menu_groups.keys())[list(self.menu_groups.values()).index(self.active_group)])
                 self.active_group.update(self.events,self.mouse,self)
             elif self.GameState == 'editor':
                 self.editor.run(self,self.events)
@@ -110,7 +119,7 @@ class Main():
                 self.active_group.draw(self.screen)
 
             #updating & framerate
-            debug(int(self.clock.get_fps()),scale)
+            debug(int(self.clock.get_fps()),Scale)
             self.clock.tick(fps)
             pygame.display.update()
 
