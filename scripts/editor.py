@@ -16,6 +16,7 @@ class Editor():
     def __init__(self,game,screen,level):
         self.display = screen
         self.scale = game.scale
+        self.guiscale = game.guiscale
         self.WINDOWSIZE = vec([base_size[0]*self.scale,base_size[1]*self.scale])
         self.origin = vec(self.WINDOWSIZE[0]//2,self.WINDOWSIZE[1]//2)
 
@@ -24,7 +25,7 @@ class Editor():
         self.scroll = vec()
 
         #text
-        self.text = Text(self.scale,load('graphics/font_sheet.png'),1)
+        self.text = Text(self.guiscale,load('graphics/font_sheet.png'),1)
 
         #grid
         self.grid = pygame.Surface((self.WINDOWSIZE),pygame.SRCALPHA)
@@ -84,7 +85,7 @@ class Editor():
     def tiledetails(self):
         pos = vec(mouse_pos())
         self.tile = self.GetTilePos(pos)
-        self.coords = self.text.render(f'{int(self.tile.x)}, {int(self.tile.y)}',0.5)
+        self.coords = self.text.render(f'{int(self.tile.x)}, {int(self.tile.y)}',1)
 
         if self.coords:
             self.display.blit(self.coords.image,(self.WINDOWSIZE[0]-self.coords.image.get_width()-1*self.scale,1*self.scale))

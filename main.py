@@ -5,6 +5,8 @@ from os import walk
 
 from scripts import *
 
+#possibly add solution for ui to scale instead of regening
+
 pygame.init()
 
 sinfo = pygame.display.Info()
@@ -76,7 +78,7 @@ class Main():
                 ])
                 ]),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',[
-                Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,4],self.guiscale),
+                Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,8],self.guiscale),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
             ])
             

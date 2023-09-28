@@ -303,7 +303,7 @@ class Slider():
         self.values = value
         if self.range > 1:
             self.increment = self.bar.width / (self.range - 1)
-        self.offset = (default -1) * self.increment
+        self.offset = (default -min(self.values)) * self.increment
         self.current = default
         self.barvalue = default  
 
@@ -318,12 +318,12 @@ class Slider():
 
     def update(self,events,mouse,game):
         self.bar.topleft = vec(self.rect.topleft)+(self.padding*self.scale,self.padding*self.scale)
-        if self.rect.collidepoint(mouse):
-            for event in events:
-                if event.type == pygame.MOUSEBUTTONDOWN and mouse_buttons()[0]:
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and mouse_buttons()[0]:
+                if self.rect.collidepoint(mouse):
                     self.baractive = True
-                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    self.barvalue = self.current
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                self.barvalue = self.current
 
         if self.baractive:
             self.offset = vec(mouse).x - self.bar.topleft[0]
