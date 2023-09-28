@@ -14,6 +14,8 @@ from .gui import *
 
 class Editor():
     def __init__(self,game,screen,level):
+        #start
+        self.images = game.images
         self.display = screen
         self.scale = game.scale
         self.guiscale = game.guiscale

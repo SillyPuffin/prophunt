@@ -35,6 +35,8 @@ class Main():
             self.screen = pygame.display.set_mode(self.size,pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode(self.size)
+
+        self.images = Images(Scale)
         self.clock = pygame.time.Clock()
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.guiscale,self.font,1)

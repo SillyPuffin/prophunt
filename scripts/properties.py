@@ -1,3 +1,3 @@
 blocks = {
-    'wood':{'collide':True,'name':'wood','icon':"graphics/tiles/woodicon.png"}
+    'wood':{'collide':True,'path':'wood','icon':"wood"}
 }
