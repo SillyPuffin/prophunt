@@ -9,6 +9,7 @@ from pygame.math import Vector2 as vec
 from .properties import *
 from .settings import *
 from .utils import *
+from .tile import Tile
 from .gui import *
 
 
@@ -36,6 +37,9 @@ class Editor():
         self.tile = vec()
         self.coords = None
 
+        #blockplacement
+        self.active_block = None
+
         #init level
         if level: 
             self.LoadLevel(level)
@@ -60,6 +64,9 @@ class Editor():
 
         if self.scroll_active:
             self.origin = vec(mouse_pos()) - self.scroll
+
+    def BlockPlace(self):
+        pass
 
     def drawlines(self):
         cols = int(self.WINDOWSIZE[0] // scale(self.scale,tile_size))  
