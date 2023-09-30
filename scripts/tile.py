@@ -23,9 +23,9 @@ class Tile():
 
     def getData(self):
         return 0
+
     def getNeighbour(self,tiles):
-        getkey = lambda x: f'{int(x.x)}:{int(x.y)}'
-        getvec = lambda x: vec(int(x.split(':')[0]),int(x.split(':')[1]))
+        getkey = lambda x: f'{int(x[0])}:{int(x[1])}'
         
         n = getkey([self.grid.x,self.grid.y-1])
         s = getkey([self.grid.x,self.grid.y+1])
@@ -36,9 +36,47 @@ class Tile():
         se = getkey([self.grid.x+1,self.grid.y+1])
         sw= getkey([self.grid.x-1,self.grid.y+1])
 
+        neighbours = {
+            'n':tiles[n] if n in tiles else None,
+            's':tiles[s] if s in tiles else None,
+            'w':tiles[w] if w in tiles else None,
+            'e':tiles[e] if e in tiles else None,
+            'nw':tiles[nw] if nw in tiles else None,
+            'ne':tiles[ne] if ne in tiles else None,
+            'se':tiles[se] if se in tiles else None,
+            'sw':tiles[sw] if sw in tiles else None,
+        }
         
-
-        return None
+        return neighbours
+    
     def setImage(self,images,tiles):
+        self.image = pygame.Surface((self.tileSize,self.tileSize),pygame.SRCALPHA)
+        #fetch neignbours
         neighbours = self.getNeighbour(tiles)
+        #baseimage
+        s = []
+        if neighbours['n']:
+            s.append('1')
+        if neighbours['s']:
+            s.append('3')
+        if neighbours['w']:
+            s.append('4')
+        if neighbours['e']:
+            s.append('2')
+        #if empty
+        if not s:
+            s.append('0')
+        s.sort()
+        s = ''.join(s)
+        #draw
+        self.image.blit(images[s],(0,0))
+        #corner
+        if neighbours['n'] and neighbours['w'] and not neighbours['nw']:
+            self.image.blit(images['5'],(0,0))
+        if neighbours['n'] and neighbours['e'] and not neighbours['ne']:
+            self.image.blit(images['6'],(0,0))
+        if neighbours['s'] and neighbours['e'] and not neighbours['se']:
+            self.image.blit(images['7'],(0,0))
+        if neighbours['s'] and neighbours['w'] and not neighbours['sw']:
+            self.image.blit(images['8'],(0,0))
         

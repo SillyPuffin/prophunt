@@ -54,6 +54,24 @@ class Editor():
     def eventloop(self,events):
         pass
 
+    def updateNeighbours(self,pos,images):
+        getkey = lambda x: f'{int(x[0])}:{int(x[1])}'
+        
+        neighbours = [
+        getkey([pos.x,pos.y-1]),
+        getkey([pos.x,pos.y+1]),
+        getkey([pos.x-1,pos.y]),
+        getkey([pos.x+1,pos.y]),
+        getkey([pos.x-1,pos.y-1]),
+        getkey([pos.x+1,pos.y-1]),
+        getkey([pos.x+1,pos.y+1]),
+        getkey([pos.x-1,pos.y+1])
+        ]
+        for tile in neighbours:
+            if tile in self.rundata['grid']:
+                #regen savedata
+                self.rundata['grid'][tile].setImage(images,self.rundata['grid'])
+        
     def pan_input(self):
         if (pygame.MOUSEBUTTONDOWN,2) in self.inputEvents and mouse_buttons()[1]:
             self.scroll_active = True
@@ -73,18 +91,22 @@ class Editor():
             if key in self.rundata['grid']:
                 if self.rundata['grid'][key].name != self.active_block:
                     self.rundata['grid'][key].AddData(blocks[self.active_block],pos,images,self.rundata['grid'])
+                    self.updateNeighbours(pos,images)
                     self.savedata['grid'][key] = self.rundata['grid'][key].getData()
             else:
                 new_tile = Tile(self.tileSize,blocks[self.active_block],pos,images,self.rundata['grid'])
                 self.rundata['grid'][key] = new_tile
+                self.updateNeighbours(pos,images)
                 self.savedata['grid'][key] = new_tile.getData()
         
         if mouse_buttons()[2]:
+            images = self.images.tile_sets[self.active_block]
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
             if key in self.rundata['grid']:
                 del self.rundata['grid'][key]
                 del self.savedata['grid'][key]
+                self.updateNeighbours(pos,images)
 
     def drawlines(self):
         cols = int(self.WINDOWSIZE[0] // scale(self.scale,tile_size))  
