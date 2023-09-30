@@ -58,7 +58,7 @@ class Main():
             levels.append(newbutton)
         
         box = self.text.render('he-llo my name is jeff and i like to eat cheese on wednesdays',1.25,(50,20))
-        
+        ####Baileys attention::: please index the elements for columns and ui containers when you have a mo. I need it accessing values easier. Thx bro :)
         self.menu_groups = {
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical',[

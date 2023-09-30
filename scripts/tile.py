@@ -5,6 +5,7 @@ from pygame.math import Vector2 as vec
 class Tile():
     def __init__(self,tileSize,data,pos,images,tiles):
         self.tileSize = tileSize
+        self.total = ['0']
         #adddata
         self.AddData(data,pos,images,tiles)
 
@@ -22,7 +23,9 @@ class Tile():
         self.setImage(images,tiles)
 
     def getData(self):
-        return 0
+        data = self.data
+        data['image'] = self.total
+        return data
 
     def getNeighbour(self,tiles):
         getkey = lambda x: f'{int(x[0])}:{int(x[1])}'
@@ -53,6 +56,7 @@ class Tile():
         self.image = pygame.Surface((self.tileSize,self.tileSize),pygame.SRCALPHA)
         #fetch neignbours
         neighbours = self.getNeighbour(tiles)
+        self.total = []
         #baseimage
         s = []
         if neighbours['n']:
@@ -68,15 +72,19 @@ class Tile():
             s.append('0')
         s.sort()
         s = ''.join(s)
+        self.total.append(s)
         #draw
         self.image.blit(images[s],(0,0))
         #corner
         if neighbours['n'] and neighbours['w'] and not neighbours['nw']:
             self.image.blit(images['5'],(0,0))
+            self.total.append('5')
         if neighbours['n'] and neighbours['e'] and not neighbours['ne']:
             self.image.blit(images['6'],(0,0))
+            self.total.append('6')
         if neighbours['s'] and neighbours['e'] and not neighbours['se']:
             self.image.blit(images['7'],(0,0))
+            self.total.append('7')
         if neighbours['s'] and neighbours['w'] and not neighbours['sw']:
             self.image.blit(images['8'],(0,0))
-        
+            self.total.append('8')
