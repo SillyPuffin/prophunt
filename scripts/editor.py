@@ -71,6 +71,7 @@ class Editor():
             if tile in self.rundata['grid']:
                 #regen savedata
                 self.rundata['grid'][tile].setImage(images,self.rundata['grid'])
+                self.savedata['grid'][tile] = self.rundata['grid'][tile].getData()
         
     def pan_input(self):
         if (pygame.MOUSEBUTTONDOWN,2) in self.inputEvents and mouse_buttons()[1]:
