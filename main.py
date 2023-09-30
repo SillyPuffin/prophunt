@@ -113,7 +113,7 @@ class Main():
                     self.regenMenus(list(self.menu_groups.keys())[list(self.menu_groups.values()).index(self.active_group)])
                 self.active_group.update(self.events,self.mouse,self)
             elif self.GameState == 'editor':
-                self.editor.run(self,self.events)
+                self.editor.update(self,self.events)
                 
             #drawing
             

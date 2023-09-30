@@ -38,26 +38,26 @@ class Editor():
         self.coords = None
 
         #blockplacement
-        self.active_block = None
+        self.active_block = 'wood'
+        self.tileSize = tile_size * self.scale
 
         #init level
         if level: 
             self.LoadLevel(level)
         else:
-            self.data = {}
+            self.savedata = {'offgrid':{},'grid':{}}
+            self.rundata = {'offgrid':{},'grid':{}}
 
     def LoadLevel(self,level):
         pass
 
     def eventloop(self,events):
-        for event in events:
-            self.pan_input(event)
+        pass
 
-    def pan_input(self,event=None):
-        if event:
-            if event.type == pygame.MOUSEBUTTONDOWN and mouse_buttons()[1]:
-                self.scroll_active = True
-                self.scroll = vec(mouse_pos()) - self.origin
+    def pan_input(self):
+        if (pygame.MOUSEBUTTONDOWN,2) in self.inputEvents and mouse_buttons()[1]:
+            self.scroll_active = True
+            self.scroll = vec(mouse_pos()) - self.origin
         
         if not mouse_buttons()[1]:
             self.scroll_active = False
@@ -66,7 +66,25 @@ class Editor():
             self.origin = vec(mouse_pos()) - self.scroll
 
     def BlockPlace(self):
-        pass
+        if mouse_buttons()[0] and self.active_block != None:
+            pos = self.GetTilePos(mouse_pos())
+            key = f'{int(pos.x)}:{int(pos.y)}'
+            images = self.images.tile_sets[self.active_block]
+            if key in self.rundata['grid']:
+                if self.rundata['grid'][key].name != self.active_block:
+                    self.rundata['grid'][key].AddData(blocks[self.active_block],pos,images,self.rundata['grid'])
+                    self.savedata['grid'][key] = self.rundata['grid'][key].getData()
+            else:
+                new_tile = Tile(self.tileSize,blocks[self.active_block],pos,images,self.rundata['grid'])
+                self.rundata['grid'][key] = new_tile
+                self.savedata['grid'][key] = new_tile.getData()
+        
+        if mouse_buttons()[2]:
+            pos = self.GetTilePos(mouse_pos())
+            key = f'{int(pos.x)}:{int(pos.y)}'
+            if key in self.rundata['grid']:
+                del self.rundata['grid'][key]
+                del self.savedata['grid'][key]
 
     def drawlines(self):
         cols = int(self.WINDOWSIZE[0] // scale(self.scale,tile_size))  
@@ -87,8 +105,7 @@ class Editor():
 
     def GetTilePos(self,pos):
         pos = vec(pos) - self.origin
-        ts = scale(self.scale,tile_size)
-        x,y = int(pos.x//ts),int(pos.y//ts)
+        x,y = int(pos.x//self.tileSize),int(pos.y//self.tileSize)
         return vec(x,y)
 
     def tiledetails(self):
@@ -99,11 +116,30 @@ class Editor():
         if self.coords:
             self.display.blit(self.coords.image,(self.WINDOWSIZE[0]-self.coords.image.get_width()-1*self.scale,1*self.scale))
 
-    def run(self,game,events):
+    def inputEvent(self,events):
+        self.inputEvents = []
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
+                self.inputEvents.append((event.type,event.button))
+            elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                self.inputEvents.append((event.type,event.button))
+
+    def drawTiles(self):
+        tiles = list(self.rundata['grid'].values())
+        for tile in tiles:
+            self.display.blit(tile.image,vec(tile.rect.topleft)+self.origin)
+
+    def update(self,game,events):
+        self.inputEvent(events)
         self.eventloop(events)
+
+        #panning and grid
+        self.pan_input()
+        self.BlockPlace()
 
         #drawing
         self.display.fill((0,20,50))
+        self.drawTiles()
         self.drawlines()
         pygame.draw.circle(self.display,(0,150,80),self.origin,scale(self.scale,2))
         self.tiledetails()
