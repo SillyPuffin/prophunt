@@ -101,7 +101,7 @@ class Editor():
 
     def run(self,game,events):
         self.eventloop(events)
-        
+
         #drawing
         self.display.fill((0,20,50))
         self.drawlines()
