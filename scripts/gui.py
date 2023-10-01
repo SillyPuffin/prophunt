@@ -362,12 +362,14 @@ class Slider():
 
 #can make vertical and horizontal columns
 class Column():
-    def __init__(self,pos,spacing,scale,direction, elements = None):
+    def __init__(self,pos,spacing,scale,direction,name=None, elements = None):
         self.pos = pos
         self.direction = direction
         self.elements = []
+        self.dictionary = None
         self.type = 'column'
         self.spacing = spacing * scale
+        self.name = name
         self.height = 0
         self.width = 0
 
@@ -378,6 +380,10 @@ class Column():
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
+        elif type(elements) == dict:
+            for item in list(elements.values()):
+                self.elements.append(item)
+            self.dictionary = elements
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
 
@@ -422,12 +428,18 @@ class Column():
             screen.blit(item.image,item.rect)
 
 class UiContainter():
-    def __init__(self, elements):
+    def __init__(self,name=None, elements=None):
         self.elements = []
+        self.name = name
+        self.dictionary = None
         self.type = 'container'
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
+        elif type(elements) == dict:
+            for item in list(elements.values()):
+                self.elements.append(item)
+            self.dictionary = elements
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
     
