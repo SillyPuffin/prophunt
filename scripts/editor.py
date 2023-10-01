@@ -69,8 +69,8 @@ class Editor():
         ]
         for tile in neighbours:
             if tile in self.rundata['grid']:
-                #regen savedata
-                self.rundata['grid'][tile].setImage(images,self.rundata['grid'])
+                _images = images[self.rundata['grid'][tile].data['name']]
+                self.rundata['grid'][tile].setImage(_images,self.rundata['grid'])
                 self.savedata['grid'][tile] = self.rundata['grid'][tile].getData()
         
     def pan_input(self):
@@ -88,16 +88,16 @@ class Editor():
         if mouse_buttons()[0] and self.active_block != None:
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
-            images = self.images.tile_sets[self.active_block]
+            images = self.images.tile_sets[self.active_block]#tileset
             if key in self.rundata['grid']:
                 if self.rundata['grid'][key].name != self.active_block:
                     self.rundata['grid'][key].AddData(blocks[self.active_block],pos,images,self.rundata['grid'])
-                    self.updateNeighbours(pos,images)
+                    self.updateNeighbours(pos,self.images.tile_sets)
                     self.savedata['grid'][key] = self.rundata['grid'][key].getData()
             else:
                 new_tile = Tile(self.tileSize,blocks[self.active_block],pos,images,self.rundata['grid'])
                 self.rundata['grid'][key] = new_tile
-                self.updateNeighbours(pos,images)
+                self.updateNeighbours(pos,self.images.tile_sets)
                 self.savedata['grid'][key] = new_tile.getData()
         
         if mouse_buttons()[2]:
@@ -107,7 +107,7 @@ class Editor():
             if key in self.rundata['grid']:
                 del self.rundata['grid'][key]
                 del self.savedata['grid'][key]
-                self.updateNeighbours(pos,images)
+                self.updateNeighbours(pos,self.images.tile_sets)
 
     def drawlines(self):
         cols = int(self.WINDOWSIZE[0] // scale(self.scale,tile_size))  
