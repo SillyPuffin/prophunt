@@ -1,4 +1,5 @@
 from .utils import *
+from os import walk
 
 class Images:
     def __init__(self,scale):
