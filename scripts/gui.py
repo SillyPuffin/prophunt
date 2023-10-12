@@ -429,8 +429,12 @@ class Column():
 
 #gridiigidiy gridding :)
 class Grid():
-    def __init__(self) -> None:
-        pass #hi
+    def __init__(self,center,spacing,scale,name=None,elements=None) -> None:
+        self.center = vec(center)
+        self.spacing = spacing
+        self.scale = scale
+        self.name = name
+        #add elements
 
 class UiContainter():
     def __init__(self,name=None, elements=None):
