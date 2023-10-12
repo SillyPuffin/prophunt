@@ -427,6 +427,11 @@ class Column():
         for item in self.elements:
             screen.blit(item.image,item.rect)
 
+#gridiigidiy gridding :)
+class Grid():
+    def __init__(self) -> None:
+        pass #hi
+
 class UiContainter():
     def __init__(self,name=None, elements=None):
         self.elements = []
