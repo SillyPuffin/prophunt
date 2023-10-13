@@ -435,6 +435,15 @@ class Grid():
         self.scale = scale
         self.name = name
         #add elements
+    def addelements(self,elements):
+        pass
+
+    def genPage(self):
+        pass
+
+    def centerElements(self,page):
+        pass
+
 
 class UiContainter():
     def __init__(self,name=None, elements=None):
