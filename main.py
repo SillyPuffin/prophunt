@@ -83,7 +83,7 @@ class Main():
                 })
             
         }
-
+    
         self.active_group = self.menu_groups['main_group']
 
     def CreateEditor(self,level=None):
