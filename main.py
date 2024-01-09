@@ -84,7 +84,7 @@ class Main():
             
         }
     
-        self.active_group = self.menu_groups['main_group']
+        self.active_group = self.menu_groups['LevelSelect']
 
     def CreateEditor(self,level=None):
         self.editor = None
