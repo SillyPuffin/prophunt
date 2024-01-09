@@ -124,7 +124,6 @@ class Main():
             if self.GameState == 'menu':
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
-                pygame.draw.circle(self.screen,(0,255,0),vec(window_size)/2,2)
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)
