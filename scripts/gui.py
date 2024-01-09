@@ -392,19 +392,6 @@ class Column():
 
         #column
         if self.direction == 'vertical':
-            # self.height = 0
-            # self.width = max(map(lambda x:x.rect.width,self.elements))
-            # for item in self.elements:
-            #     item.rect.centerx = self.pos[0]
-            #     self.height += item.rect.height
-            # box = self.height / len(self.elements)
-            # self.height += self.spacing*(len(self.elements))
-            # offset = int((self.height-box)/2)
-            # interval = int(self.height/len(self.elements))
-            # for count,item in enumerate(self.elements):
-            #     item.rect.centery = interval*count + (self.pos[1]-offset)
-            # self.rect = pygame.Rect(0,0,(self.width+self.spacing*2), (self.height+self.spacing*2))
-            # self.rect.center = self.pos
             self.height = 0
             for item in self.elements:
                 item.rect.center = vec(0,self.height+item.rect.height/2)
@@ -417,18 +404,14 @@ class Column():
         #row
         elif self.direction == 'horizontal':
             self.width = 0
-            self.height = max(map(lambda x:x.rect.height,self.elements))
             for item in self.elements:
-                item.rect.centery = self.pos[1]
+                item.rect.center = vec(self.width+item.rect.width/2,0)
                 self.width += item.rect.width
-            box = self.width / len(self.elements)
-            self.width += self.spacing*(len(self.elements)-1)
-            offset = int((self.width-box)/2)
-            interval = int(self.width/len(self.elements))
-            for count,item in enumerate(self.elements):
-                item.rect.centerx = interval*count + (self.pos[0]-offset)
-            self.rect = pygame.Rect(0,0,(self.width+self.spacing*2), (self.height+self.spacing*2))
-            self.rect.center = self.pos
+                self.width += self.spacing
+            self.width -= self.spacing
+            direction = vec(self.pos[0] - self.width/2,self.pos[1])
+            for item in self.elements:
+                item.rect = item.rect.move(direction)
 
     def collidepoint(self,point):
         for item in self.elements:
@@ -442,7 +425,6 @@ class Column():
             item.update(events,mouse,game)
 
     def draw(self,screen):
-        pygame.draw.rect(screen,(0,0,0),self.rect)
         for item in self.elements:
             screen.blit(item.image,item.rect)
 
