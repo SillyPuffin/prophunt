@@ -406,7 +406,14 @@ class Column():
             # self.rect = pygame.Rect(0,0,(self.width+self.spacing*2), (self.height+self.spacing*2))
             # self.rect.center = self.pos
             self.height = 0
-            
+            for item in self.elements:
+                item.rect.center = vec(0,self.height+item.rect.height/2)
+                self.height += item.rect.height
+                self.height += self.spacing
+            self.height -= self.spacing
+            direction = vec(self.pos[0],self.pos[1] - self.height/2)
+            for item in self.elements:
+                item.rect = item.rect.move(direction)
         #row
         elif self.direction == 'horizontal':
             self.width = 0

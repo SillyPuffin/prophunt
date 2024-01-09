@@ -61,7 +61,7 @@ class Main():
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical','main_group',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.guiscale,switch_ButtonGroup,'play_group'),
-                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'LevelSelect'),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'LevelSelect'),
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.guiscale,switch_ButtonGroup,'settings'),
                 Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.guiscale,QuitGame)
                 ]),
@@ -84,7 +84,7 @@ class Main():
             
         }
     
-        self.active_group = self.menu_groups['LevelSelect']
+        self.active_group = self.menu_groups['main_group']
 
     def CreateEditor(self,level=None):
         self.editor = None
