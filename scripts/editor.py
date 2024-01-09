@@ -67,6 +67,7 @@ class Editor():
         getkey([pos.x+1,pos.y+1]),
         getkey([pos.x-1,pos.y+1])
         ]
+
         for tile in neighbours:
             if tile in self.rundata['grid']:
                 _images = images[self.rundata['grid'][tile].data['name']]
