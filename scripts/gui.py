@@ -449,21 +449,29 @@ class Grid():
 
     def createPages(self,elements):
         self.addelements(elements)
-        arrowSize = 20*self.scale
-        maxwidth = (self.spacing * 4 + arrowSize*2)-self.size
-        rows = Column(self.center,self.spacing,self.scale,'vertical',f'page {pageNumber}')
-        width = -self.spacing
-        thisrow = []
+        arrowSize = 18*self.scale
+        self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*2)
+        self.rows = []
+        self.width = -self.spacing
+        self.thisrow = []
+        #put all the elements into columns that fit horizontally or rows
         for item in self.elements:
-            width += item.rect.width + self.spacing
-            if width > maxwidth:
-                newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row')
+            self.width += item.rect.width + self.spacing
+            if self.width > self.maxwidth:
+                self.addColumn()
+                self.thisrow.append(item)
             else:
-                thisrow.append(item)
+                self.thisrow.append(item)
+        self.addColumn()
+        #put all rows into pages that fit the right amount
+        print(self.rows)
 
-
-
-
+    def addColumn(self):
+        newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row',self.thisrow)
+        self.thisrow = []
+        self.width = 0
+        self.rows.append(newcolumn)
+        
     def addelements(self,elements):
         if type(elements) == list:
             for item in elements:
@@ -479,6 +487,12 @@ class Grid():
         pass
 
     def centerElements(self,page):
+        pass
+
+    def update(self,events,mouse,game=None):
+        pass
+
+    def draw(self,screen):
         pass
 
 
