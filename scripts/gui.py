@@ -379,7 +379,7 @@ class Column():
         if elements != None:
             self.AddElement(elements)
 
-    def AddElement(self,elements): 
+    def AddElement(self,elements=None): 
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
@@ -393,7 +393,7 @@ class Column():
         #column
         if self.direction == 'vertical':
             self.height = 0
-            self.width = max(map(lambda x: x.rect.width),self.elements)
+            self.width = max(map(lambda x: x.rect.width,self.elements))
             for item in self.elements:
                 item.rect.center = vec(0,self.height+item.rect.height/2)
                 self.height += item.rect.height
@@ -406,7 +406,7 @@ class Column():
         #row
         elif self.direction == 'horizontal':
             self.width = 0
-            self.height = max(map(lambda x: x.rect.height),self.elements)
+            self.height = max(map(lambda x: x.rect.height,self.elements))
             for item in self.elements:
                 item.rect.center = vec(self.width+item.rect.width/2,0)
                 self.width += item.rect.width
@@ -438,6 +438,7 @@ class Grid():
         self.center = vec(center)
         self.spacing = spacing
         self.scale = scale
+        self.size = size
         self.name = name
         self.elements = []
         self.pages = {}
@@ -449,10 +450,18 @@ class Grid():
     def createPages(self,elements):
         self.addelements(elements)
         arrowSize = 20*self.scale
-        maxwidth = self.spacing * 4 + arrowSize*2
-        rows = []
+        maxwidth = (self.spacing * 4 + arrowSize*2)-self.size
+        rows = Column(self.center,self.spacing,self.scale,'vertical',f'page {pageNumber}')
+        width = -self.spacing
+        thisrow = []
         for item in self.elements:
-            pass
+            width += item.rect.width + self.spacing
+            if width > maxwidth:
+                newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row')
+            else:
+                thisrow.append(item)
+
+
 
 
     def addelements(self,elements):

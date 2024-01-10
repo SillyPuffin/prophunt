@@ -85,6 +85,8 @@ class Main():
         }
     
         self.active_group = self.menu_groups['main_group']
+        self.active_group.pos = (800,1000)
+        self.active_group.AddElement()
 
     def CreateEditor(self,level=None):
         self.editor = None
