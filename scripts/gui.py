@@ -40,7 +40,7 @@ class TextBox():
 
 class Text():
     def __init__(self,scale,image,spacing):
-        order = " abcdefghijklmnopqrstuvwxyz,'.:-?!1234567890/\()[]"
+        order = " abcdefghijklmnopqrstuvwxyz,'.:-?!1234567890/\()[]<>"
         self.letters = {}
         self.lstart = None
         self.scale = scale
@@ -393,6 +393,7 @@ class Column():
         #column
         if self.direction == 'vertical':
             self.height = 0
+            self.width = max(map(lambda x: x.rect.width),self.elements)
             for item in self.elements:
                 item.rect.center = vec(0,self.height+item.rect.height/2)
                 self.height += item.rect.height
@@ -401,9 +402,11 @@ class Column():
             direction = vec(self.pos[0],self.pos[1] - self.height/2)
             for item in self.elements:
                 item.rect = item.rect.move(direction)
+            self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
         #row
         elif self.direction == 'horizontal':
             self.width = 0
+            self.height = max(map(lambda x: x.rect.height),self.elements)
             for item in self.elements:
                 item.rect.center = vec(self.width+item.rect.width/2,0)
                 self.width += item.rect.width
@@ -412,6 +415,7 @@ class Column():
             direction = vec(self.pos[0] - self.width/2,self.pos[1])
             for item in self.elements:
                 item.rect = item.rect.move(direction)
+            self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
 
     def collidepoint(self,point):
         for item in self.elements:
@@ -430,14 +434,37 @@ class Column():
 
 #gridiigidiy gridding :)
 class Grid():
-    def __init__(self,center,spacing,scale,name=None,elements=None) -> None:
+    def __init__(self,center,spacing,scale,size,name=None,elements=None) -> None:
         self.center = vec(center)
         self.spacing = spacing
         self.scale = scale
         self.name = name
+        self.elements = []
+        self.pages = {}
+        self.dictionary = {}
         #add elements
+        if elements != None:
+            self.createPages(elements)
+
+    def createPages(self,elements):
+        self.addelements(elements)
+        arrowSize = 20*self.scale
+        maxwidth = self.spacing * 4 + arrowSize*2
+        rows = []
+        for item in self.elements:
+            pass
+
+
     def addelements(self,elements):
-        pass
+        if type(elements) == list:
+            for item in elements:
+                self.elements.append(item)
+        elif type(elements) == dict:
+            for item in list(elements.values()):
+                self.elements.append(item)
+            self.dictionary = elements
+        elif hasattr(elements,'__dict__'):
+            self.elements.append(elements)
 
     def genPage(self):
         pass
