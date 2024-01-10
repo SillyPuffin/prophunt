@@ -442,6 +442,7 @@ class Grid():
         self.name = name
         self.elements = []
         self.pages = {}
+        self.activegroup = self.pages['1']
         self.dictionary = {}
         #add elements
         if elements != None:
@@ -453,6 +454,7 @@ class Grid():
         self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*2)
         self.rows = []
         self.width = -self.spacing
+        self.height = -self.spacing
         self.thisrow = []
         #put all the elements into columns that fit horizontally or rows
         for item in self.elements:
@@ -462,10 +464,20 @@ class Grid():
                 self.thisrow.append(item)
             else:
                 self.thisrow.append(item)
-        self.addColumn()
+        if self.thisrow:
+            self.addColumn()
         #put all rows into pages that fit the right amount
-        print(self.rows)
-
+        self.thiscolumn = []
+        for index,row in enumerate(self.rows):
+            self.height += item.rect.height + self.spacing
+            if self.height > self.size[1]:
+                self.genPage(index)
+                self.thiscolumn.append(row)
+            else:
+                self.thisrow.append(row)
+        if self.thiscolumn:
+            self.genPage(index)
+        
     def addColumn(self):
         newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row',self.thisrow)
         self.thisrow = []
@@ -489,11 +501,15 @@ class Grid():
     def centerElements(self,page):
         pass
 
+    def changeActive(self,key):
+        self.activegroup = self.pages[key]
+
     def update(self,events,mouse,game=None):
-        pass
+        self.activegroup.update(events,mouse,game)
 
     def draw(self,screen):
-        pass
+        for item in self.rows:
+            item.draw(screen)
 
 
 class UiContainter():
