@@ -287,6 +287,7 @@ class Slider():
         size = scale(_scale,size)
         self.scale = _scale
         self.padding = padding
+        self.type = 'slider'
 
         #colours
         self.colour = colour[0]
@@ -395,26 +396,38 @@ class Column():
             self.height = 0
             self.width = max(map(lambda x: x.rect.width,self.elements))
             for item in self.elements:
-                item.rect.center = vec(0,self.height+item.rect.height/2)
+                if item.type == 'button':
+                    item.rect.center = vec(0,self.height+item.rect.height/2)
+                elif item.type == 'column':
+                    item.pos = vec(0,self.height+item.rect.height/2)
                 self.height += item.rect.height
                 self.height += self.spacing
             self.height -= self.spacing
             direction = vec(self.pos[0],self.pos[1] - self.height/2)
             for item in self.elements:
-                item.rect = item.rect.move(direction)
+                if item.type == 'button':
+                    item.rect = item.rect.move(direction)
+                elif item.type == 'column':
+                    item.pos += direction
             self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
         #row
         elif self.direction == 'horizontal':
             self.width = 0
             self.height = max(map(lambda x: x.rect.height,self.elements))
             for item in self.elements:
-                item.rect.center = vec(self.width+item.rect.width/2,0)
+                if item.type == 'button':
+                    item.rect.center = vec(self.width+item.rect.width/2,0)
+                elif item.type == 'column':
+                    item.pos = vec(self.width+item.rect.width/2,0)
                 self.width += item.rect.width
                 self.width += self.spacing
             self.width -= self.spacing
             direction = vec(self.pos[0] - self.width/2,self.pos[1])
             for item in self.elements:
-                item.rect = item.rect.move(direction)
+                if item.type == 'button':
+                    item.rect = item.rect.move(direction)
+                elif item.type == 'column':
+                    item.pos += direction
             self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
 
     def collidepoint(self,point):
@@ -430,7 +443,7 @@ class Column():
 
     def draw(self,screen):
         for item in self.elements:
-            screen.blit(item.image,item.rect)
+            item.draw(screen)
 
 #gridiigidiy gridding :)
 class Grid():
@@ -438,11 +451,12 @@ class Grid():
         self.center = vec(center)
         self.spacing = spacing
         self.scale = scale
+        self.type = 'grid'
         self.size = size
         self.name = name
         self.elements = []
         self.pages = {}
-        self.activegroup = self.pages['1']
+        self.activegroup = None
         self.dictionary = {}
         #add elements
         if elements != None:
@@ -452,6 +466,7 @@ class Grid():
         self.addelements(elements)
         arrowSize = 18*self.scale
         self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*2)
+        print(self.maxwidth)
         self.rows = []
         self.width = -self.spacing
         self.height = -self.spacing
@@ -462,26 +477,35 @@ class Grid():
             if self.width > self.maxwidth:
                 self.addColumn()
                 self.thisrow.append(item)
+                self.width += item.rect.width + self.spacing
             else:
                 self.thisrow.append(item)
         if self.thisrow:
             self.addColumn()
         #put all rows into pages that fit the right amount
         self.thiscolumn = []
-        for index,row in enumerate(self.rows):
+        page = 0
+        for row in self.rows:
             self.height += item.rect.height + self.spacing
             if self.height > self.size[1]:
-                self.genPage(index)
+                self.genPage(page)
+                page += 1
                 self.thiscolumn.append(row)
+                self.height += item.rect.height + self.spacing
             else:
-                self.thisrow.append(row)
+                self.thiscolumn.append(row)
         if self.thiscolumn:
-            self.genPage(index)
+            self.genPage(page)
+
+        for i in self.thiscolumn:
+            print(i.elements)
+        #setgroup to active
+        self.activegroup = self.pages['0']
         
     def addColumn(self):
         newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row',self.thisrow)
         self.thisrow = []
-        self.width = 0
+        self.width = -self.spacing
         self.rows.append(newcolumn)
         
     def addelements(self,elements):
@@ -495,11 +519,14 @@ class Grid():
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
 
-    def genPage(self):
-        pass
-
-    def centerElements(self,page):
-        pass
+    def genPage(self,index):
+        grid = Column(self.center,self.spacing,self.scale,'vertical','grid',self.thiscolumn)
+        for element in grid.elements:
+            element.AddElement()
+        container = UiContainter(f'page {index}')
+        container.AddElement(grid)
+        self.height = -self.spacing
+        self.pages[str(index)] = container
 
     def changeActive(self,key):
         self.activegroup = self.pages[key]
@@ -508,8 +535,7 @@ class Grid():
         self.activegroup.update(events,mouse,game)
 
     def draw(self,screen):
-        for item in self.rows:
-            item.draw(screen)
+        self.activegroup.draw(screen)
 
 
 class UiContainter():
@@ -518,6 +544,9 @@ class UiContainter():
         self.name = name
         self.dictionary = None
         self.type = 'container'
+        self.AddElement(elements)
+
+    def AddElement(self,elements=None):
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
