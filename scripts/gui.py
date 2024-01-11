@@ -6,7 +6,7 @@ from .utils import *
 class Word_Image():
     def __init__(self,image):
         self.image = image
-        self.rect = pygame.Rect((0,0),self.image.get_size())
+        self.rect = pygame.Rect((0,0),(self.image.get_width(),self.image.get_height()))
 
     def draw(self, screen):
         screen.blit(self.image,self.rect)
@@ -394,40 +394,31 @@ class Column():
         #column
         if self.direction == 'vertical':
             self.height = 0
+            self.pos = self.rect.center
             self.width = max(map(lambda x: x.rect.width,self.elements))
             for item in self.elements:
-                if item.type == 'button':
-                    item.rect.center = vec(0,self.height+item.rect.height/2)
-                elif item.type == 'column':
-                    item.pos = vec(0,self.height+item.rect.height/2)
+                item.rect.center = vec(0,self.height+item.rect.height/2)
                 self.height += item.rect.height
                 self.height += self.spacing
             self.height -= self.spacing
             direction = vec(self.pos[0],self.pos[1] - self.height/2)
             for item in self.elements:
-                if item.type == 'button':
-                    item.rect = item.rect.move(direction)
-                elif item.type == 'column':
-                    item.pos += direction
+                item.rect = item.rect.move(direction)
+                
             self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
         #row
         elif self.direction == 'horizontal':
+            self.pos = self.rect.center
             self.width = 0
             self.height = max(map(lambda x: x.rect.height,self.elements))
             for item in self.elements:
-                if item.type == 'button':
-                    item.rect.center = vec(self.width+item.rect.width/2,0)
-                elif item.type == 'column':
-                    item.pos = vec(self.width+item.rect.width/2,0)
+                item.rect.center = vec(self.width+item.rect.width/2,0)
                 self.width += item.rect.width
                 self.width += self.spacing
             self.width -= self.spacing
             direction = vec(self.pos[0] - self.width/2,self.pos[1])
             for item in self.elements:
-                if item.type == 'button':
-                    item.rect = item.rect.move(direction)
-                elif item.type == 'column':
-                    item.pos += direction
+                item.rect = item.rect.move(direction)
             self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
 
     def collidepoint(self,point):
@@ -447,13 +438,15 @@ class Column():
 
 #gridiigidiy gridding :)
 class Grid():
-    def __init__(self,center,spacing,scale,size,name=None,elements=None) -> None:
+    def __init__(self,center,spacing,scale,text,size,structure,name=None,elements=None) -> None:
         self.center = vec(center)
         self.spacing = spacing
         self.scale = scale
+        self.text = text
         self.type = 'grid'
         self.size = size
         self.name = name
+        self.structure = structure
         self.elements = []
         self.pages = {}
         self.activegroup = None
@@ -464,9 +457,18 @@ class Grid():
 
     def createPages(self,elements):
         self.addelements(elements)
-        arrowSize = 18*self.scale
-        self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*2)
-        print(self.maxwidth)
+        arrowSize = 18
+        self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
+        if self.structure == 'variable':
+            self.makeVarColumns()
+        elif self.structure == 'fixed':
+            self.makeFixedGrids()
+        #setgroup to active
+        self.activegroup = self.pages['0']
+        #create arrow buttons
+        self.createArrows(arrowSize)
+        
+    def makeVarColumns(self):    
         self.rows = []
         self.width = -self.spacing
         self.height = -self.spacing
@@ -496,12 +498,7 @@ class Grid():
                 self.thiscolumn.append(row)
         if self.thiscolumn:
             self.genPage(page)
-
-        for i in self.thiscolumn:
-            print(i.elements)
-        #setgroup to active
-        self.activegroup = self.pages['0']
-        
+    
     def addColumn(self):
         newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row',self.thisrow)
         self.thisrow = []
@@ -519,6 +516,9 @@ class Grid():
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
 
+    def makeFixedGrids(self):
+        pass
+
     def genPage(self,index):
         grid = Column(self.center,self.spacing,self.scale,'vertical','grid',self.thiscolumn)
         for element in grid.elements:
@@ -526,10 +526,27 @@ class Grid():
         container = UiContainter(f'page {index}')
         container.AddElement(grid)
         self.height = -self.spacing
+        self.thiscolumn = []
         self.pages[str(index)] = container
 
-    def changeActive(self,key):
+    def createArrows(self,arrowSize):
+        for key in self.pages:
+            if key == '0' and len(list(self.pages.values()))>1:
+                rightbutton = Button(vec(self.center.x + self.maxwidth/2 + self.spacing + arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('>',2,False).image,self.scale,self.changeActive,'1')
+                self.pages[key].AddElement(rightbutton)
+            elif key == str(len(list(self.pages.values()))-1) and len(list(self.pages.values()))>1:
+                leftbutton = Button(vec(self.center.x - self.maxwidth/2 - self.spacing - arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('<',2,False).image,self.scale,self.changeActive,str(int(key)-1))
+                self.pages[key].AddElement(leftbutton)
+            elif len(list(self.pages.values()))>1:
+                ikey = int(key)
+                rightbutton = Button(vec(self.center.x + self.maxwidth/2 + self.spacing + arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('>',2,False).image,self.scale,self.changeActive,str(ikey +1))
+                leftbutton = Button(vec(self.center.x - self.maxwidth/2 - self.spacing - arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('<',2,False).image,self.scale,self.changeActive,str(ikey-1))
+                self.pages[key].AddElement([leftbutton,rightbutton])
+
+
+    def changeActive(self,game,key):
         self.activegroup = self.pages[key]
+        self.activegroup.update(game.events,game.mouse,game)
 
     def update(self,events,mouse,game=None):
         self.activegroup.update(events,mouse,game)
