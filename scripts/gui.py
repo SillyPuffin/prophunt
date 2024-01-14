@@ -495,14 +495,14 @@ class Grid():
         for row in self.rows:
             self.height += item.rect.height + self.spacing
             if self.height > self.size[1]:
-                self.genPage(page)
+                self.genPageVar(page)
                 page += 1
                 self.thiscolumn.append(row)
                 self.height += item.rect.height + self.spacing
             else:
                 self.thiscolumn.append(row)
         if self.thiscolumn:
-            self.genPage(page)
+            self.genPageVar(page)
     
     def addColumn(self):
         newcolumn = Column((0,0),self.unscaledSpacing,self.scale,'horizontal','row',self.thisrow)
@@ -531,14 +531,25 @@ class Grid():
         height = buttonSize[1] * gridheight + self.spacing*(gridheight-1)
         #splitting elements into grid area sized lists
         paged = self.splitElements(gridwidth * gridheight)
-        gridpos = {}
+        #assign all elements grid postions
         getgrid = lambda index : (index % gridwidth-1,index // gridwidth)
-        for i in range(gridwidth*gridheight):
-            gridpos[f'{i}'] = None
+        self.assignPos()
         
+    def assignPos(self):
+        pass
+
     def splitElements(self, length):
         paged = []
-
+        buffer = []
+        for i in self.elements:
+            buffer.append(i)
+            if len(buffer) == length:
+                paged.append(buffer)
+                buffer = []
+        if buffer:
+            paged.append(buffer)
+        
+        return paged
 
     def getGridWidth(self,buttonSize):
         width = -self.spacing
@@ -555,14 +566,14 @@ class Grid():
         height = -self.spacing
         count = 0
         while True:
-            height += buttonSize[0] + self.spacing
+            height += buttonSize[1] + self.spacing
             if height > self.size[1]:
                 break
             count +=1
         
         return count
 
-    def genPage(self,index):
+    def genPageVar(self,index):
         grid = Column(self.center,self.unscaledSpacing,self.scale,'vertical','grid',self.thiscolumn)
         for element in grid.elements:
             element.AddElement()
