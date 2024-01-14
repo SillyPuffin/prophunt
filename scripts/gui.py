@@ -440,11 +440,12 @@ class Column():
 class Grid():
     def __init__(self,center,spacing,scale,text,size,structure,name=None,elements=None) -> None:
         self.center = vec(center)
-        self.spacing = spacing
+        self.unscaledSpacing = spacing
+        self.spacing = spacing * scale
         self.scale = scale
         self.text = text
         self.type = 'grid'
-        self.size = size
+        self.size = vec(size) * scale
         self.name = name
         self.structure = structure
         self.elements = []
@@ -459,10 +460,14 @@ class Grid():
         self.addelements(elements)
         arrowSize = 18
         self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
+
+        if self.maxwidth < 1 : print('grid width to small')
+
         if self.structure == 'variable':
             self.makeVarColumns()
         elif self.structure == 'fixed':
             self.makeFixedGrids()
+
         #setgroup to active
         self.activegroup = self.pages['0']
         #create arrow buttons
@@ -500,7 +505,7 @@ class Grid():
             self.genPage(page)
     
     def addColumn(self):
-        newcolumn = Column((0,0),self.spacing,self.scale,'horizontal','row',self.thisrow)
+        newcolumn = Column((0,0),self.unscaledSpacing,self.scale,'horizontal','row',self.thisrow)
         self.thisrow = []
         self.width = -self.spacing
         self.rows.append(newcolumn)
@@ -517,10 +522,26 @@ class Grid():
             self.elements.append(elements)
 
     def makeFixedGrids(self):
+        buttonSize = self.elements[0].rect.size
+        width = self.getGridWidth(buttonSize)
+        print(width)
+
+    def getGridWidth(self,buttonSize):
+        width = -self.spacing
+        count = 0
+        while True:
+            width += buttonSize[0] + self.spacing
+            if width > self.maxwidth:
+                break
+            count +=1
+        
+        return count
+
+    def getGridHeight(self):
         pass
 
     def genPage(self,index):
-        grid = Column(self.center,self.spacing,self.scale,'vertical','grid',self.thiscolumn)
+        grid = Column(self.center,self.unscaledSpacing,self.scale,'vertical','grid',self.thiscolumn)
         for element in grid.elements:
             element.AddElement()
         container = UiContainter(f'page {index}')
@@ -542,7 +563,6 @@ class Grid():
                 rightbutton = Button(vec(self.center.x + self.maxwidth/2 + self.spacing + arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('>',2,False).image,self.scale,self.changeActive,str(ikey +1))
                 leftbutton = Button(vec(self.center.x - self.maxwidth/2 - self.spacing - arrowSize*self.scale/2,self.center[1]),(arrowSize,arrowSize),(0,100,200),self.text.render('<',2,False).image,self.scale,self.changeActive,str(ikey-1))
                 self.pages[key].AddElement([leftbutton,rightbutton])
-
 
     def changeActive(self,game,key):
         self.activegroup = self.pages[key]

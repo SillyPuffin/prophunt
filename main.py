@@ -75,7 +75,7 @@ class Main():
             'LevelSelect':UiContainter("LevelSelect",[
                 Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
                 Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
-                Grid((vec(window_size)/2),5,self.guiscale,self.text,(900,800),'variable','levelselect',levels)
+                Grid((vec(window_size)/2),5,self.guiscale,self.text,(225,200),'fixed','levelselect',levels)
                 ]),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
                 'gui':Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,8],self.guiscale),
