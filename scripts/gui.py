@@ -523,8 +523,22 @@ class Grid():
 
     def makeFixedGrids(self):
         buttonSize = self.elements[0].rect.size
-        width = self.getGridWidth(buttonSize)
-        print(width)
+        #amount of elements across and down
+        gridwidth = self.getGridWidth(buttonSize)
+        gridheight = self.getGridHeight(buttonSize)
+        #grabbing outside edge size of the grid in pixels
+        width = buttonSize[0] * gridwidth + self.spacing*(gridwidth-1)
+        height = buttonSize[1] * gridheight + self.spacing*(gridheight-1)
+        #splitting elements into grid area sized lists
+        paged = self.splitElements(gridwidth * gridheight)
+        gridpos = {}
+        getgrid = lambda index : (index % gridwidth-1,index // gridwidth)
+        for i in range(gridwidth*gridheight):
+            gridpos[f'{i}'] = None
+        
+    def splitElements(self, length):
+        paged = []
+
 
     def getGridWidth(self,buttonSize):
         width = -self.spacing
@@ -537,8 +551,16 @@ class Grid():
         
         return count
 
-    def getGridHeight(self):
-        pass
+    def getGridHeight(self,buttonSize):
+        height = -self.spacing
+        count = 0
+        while True:
+            height += buttonSize[0] + self.spacing
+            if height > self.size[1]:
+                break
+            count +=1
+        
+        return count
 
     def genPage(self,index):
         grid = Column(self.center,self.unscaledSpacing,self.scale,'vertical','grid',self.thiscolumn)
