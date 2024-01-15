@@ -526,17 +526,35 @@ class Grid():
         #amount of elements across and down
         gridwidth = self.getGridWidth(buttonSize)
         gridheight = self.getGridHeight(buttonSize)
+        gridsize = (gridwidth,gridheight)
         #grabbing outside edge size of the grid in pixels
         width = buttonSize[0] * gridwidth + self.spacing*(gridwidth-1)
         height = buttonSize[1] * gridheight + self.spacing*(gridheight-1)
+        size = (width,height)
         #splitting elements into grid area sized lists
         paged = self.splitElements(gridwidth * gridheight)
         #assign all elements grid postions
-        getgrid = lambda index : (index % gridwidth-1,index // gridwidth)
-        self.assignPos()
+        paged = self.assignPos(size, gridsize,buttonSize, paged)
+        #put all the elements into pages:
+        self.genPageFixed(paged)
+
+    def genPageFixed(self, paged):
+        for index,i in enumerate(paged):
+            container = UiContainter(f'page {index}')
+            container.AddElement(i)
+            for e in i:
+                print(e.rect.center)
+            self.pages[str(index)] = container
         
-    def assignPos(self):
-        pass
+    def assignPos(self,size, gridsize,buttonSize,paged):
+        getgrid = lambda index : (index % gridsize[0],index // gridsize[0])
+        for page in paged:
+            for index,i in enumerate(page):
+                gridpos = getgrid(index)
+                
+                i.rect.center = ((self.center[0]-(size[0]/2)) + buttonSize[0]/2 + (gridpos[0] * (buttonSize[0]+self.spacing)),self.center[1]-size[1]/2 + buttonSize[1]/2 + (gridpos[1] * (buttonSize[1]+self.spacing)))
+
+        return paged
 
     def splitElements(self, length):
         paged = []
