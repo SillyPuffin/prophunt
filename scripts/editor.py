@@ -30,6 +30,10 @@ class Editor():
         #text
         self.text = Text(self.guiscale,load('graphics/font_sheet.png'),1)
 
+        #menu
+        self.menu = False
+        self.createMenu()
+
         #grid
         self.grid = pygame.Surface((self.WINDOWSIZE),pygame.SRCALPHA)
         self.mousestill = 0
@@ -48,10 +52,25 @@ class Editor():
             self.savedata = {'offgrid':{},'grid':{}}
             self.rundata = {'offgrid':{},'grid':{}}
 
+    def createMenu(self):
+        self.menu_groups = {
+            'main':Column(self.WINDOWSIZE/2,5,self.scale,'vertical','main',{
+                'exit':Button((0,0),(70,18),(0,100,200),self.text.render('exit',1).image,self.guiscale),
+                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale)
+        })
+        }
+        self.active_group = self.menu_groups['main']
+        self.blanks = {}
+        for key in self.menu_groups:
+            blanksize = vec(self.menu_groups[key].rect.size)
+            blanksize[0] += 10* self.guiscale; blanksize[1] += 10 * self.guiscale
+            blankrect = pygame.Rect((0,0),(blanksize))
+            blankrect.center = self.WINDOWSIZE/2
+            blanksurf = pygame.Surface(blanksize,pygame.SRCALPHA)
+            pygame.draw.rect(blanksurf,(0,0,0,100),((0,0),(blanksize)))
+            self.blanks[key] = (blanksurf,blankrect)
+        
     def LoadLevel(self,level):
-        pass
-
-    def eventloop(self,events):
         pass
 
     def updateNeighbours(self,pos,images):
@@ -86,7 +105,7 @@ class Editor():
             self.origin = vec(mouse_pos()) - self.scroll
 
     def BlockPlace(self):
-        if mouse_buttons()[0] and self.active_block != None:
+        if mouse_buttons()[0] and self.active_block != None and self.menu == False:
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
             images = self.images.tile_sets[self.active_block]#tileset
@@ -101,7 +120,7 @@ class Editor():
                 self.updateNeighbours(pos,self.images.tile_sets)
                 self.savedata['grid'][key] = new_tile.getData()
         
-        if mouse_buttons()[2]:
+        if mouse_buttons()[2] and self.menu == False:
             images = self.images.tile_sets[self.active_block]
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
@@ -146,17 +165,30 @@ class Editor():
             if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                 self.inputEvents.append((event.type,event.button))
             elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-                self.inputEvents.append((event.type,event.button))
+                self.inputEvents.append((event.type,event.key))
 
     def drawTiles(self):
         tiles = list(self.rundata['grid'].values())
         for tile in tiles:
             self.display.blit(tile.image,vec(tile.rect.topleft)+self.origin)
 
+    def drawMenu(self):
+        if self.menu:
+            self.display.blit(self.blanks['main'][0],self.blanks['main'][1])
+            self.active_group.draw(self.display)
+    
+    def updateMenu(self,events,mouse,game):
+        if (pygame.KEYUP,pygame.K_m) in self.inputEvents:
+            self.menu = not self.menu
+        if self.menu:
+            self.active_group.update(events,mouse,game)
+
     def update(self,game,events):
         self.inputEvent(events)
-        self.eventloop(events)
 
+        #updating
+        self.updateMenu(events,game.mouse,game)
+        
         #panning and grid
         self.pan_input()
         self.BlockPlace()
@@ -167,3 +199,4 @@ class Editor():
         self.drawlines()
         pygame.draw.circle(self.display,(0,150,80),self.origin,scale(self.scale,2))
         self.tiledetails()
+        self.drawMenu()

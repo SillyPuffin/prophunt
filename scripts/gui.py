@@ -623,6 +623,8 @@ class Grid():
     def draw(self,screen):
         self.activegroup.draw(screen)
 
+    def collidepoint(self,point):
+        self.activegroup.collidepoint(point)
 
 class UiContainter():
     def __init__(self,name=None, elements=None):
