@@ -123,7 +123,6 @@ class Main():
             if self.GameState == 'menu':
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
-                pygame.draw.rect(self.screen,'green',((vec(window_size)/2),(1,1)))
 
 
             #updating & framerate

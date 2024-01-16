@@ -456,7 +456,7 @@ class Grid():
         if elements != None:
             self.createPages(elements)
 
-    def createPages(self,elements):
+    def createPages(self,elements=None):
         self.addelements(elements)
         arrowSize = 18
         self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
@@ -510,7 +510,7 @@ class Grid():
         self.width = -self.spacing
         self.rows.append(newcolumn)
         
-    def addelements(self,elements):
+    def addelements(self,elements=None):
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
@@ -542,8 +542,6 @@ class Grid():
         for index,i in enumerate(paged):
             container = UiContainter(f'page {index}')
             container.AddElement(i)
-            for e in i:
-                print(e.rect.center)
             self.pages[str(index)] = container
         
     def assignPos(self,size, gridsize,buttonSize,paged):
