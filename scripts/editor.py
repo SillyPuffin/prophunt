@@ -57,7 +57,7 @@ class Editor():
         self.menu_groups = {
             'main':Column(self.WINDOWSIZE/2,5,self.scale,'vertical','main',{
                 'exit':Button((0,0),(70,18),(0,100,200),self.text.render('exit',1).image,self.guiscale,quitEditor),
-                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale)
+                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, saveLevel, self)
         })
         }
         self.active_group = self.menu_groups['main']
