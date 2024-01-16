@@ -27,4 +27,4 @@ def saveLevel(game,editor):
     newjson = json.dumps(levelData)
     with open(f"levels/level {levelnum}.json","w") as f:
         json.dump(newjson, f)
-
+    game.menu_groups['LevelSelect'].elements[2].createPages()
