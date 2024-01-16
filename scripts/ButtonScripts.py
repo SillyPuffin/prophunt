@@ -14,3 +14,6 @@ def OpenLevel(game,level):
 def switch_ButtonGroup(game,group):
     game.active_group = game.menu_groups[group]
     game.active_group.update(game.events,game.mouse,game)
+
+def quitEditor(game):
+    game.GameState = 'menu'
