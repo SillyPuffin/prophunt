@@ -120,7 +120,7 @@ class Editor():
                 self.rundata['grid'][key] = new_tile
                 self.updateNeighbours(pos,self.images.tile_sets)
                 self.savedata['grid'][key] = new_tile.getData()
-        
+            
         if mouse_buttons()[2] and self.menu == False:
             images = self.images.tile_sets[self.active_block]
             pos = self.GetTilePos(mouse_pos())

@@ -13,7 +13,7 @@ class Tile():
         #data
         self.grid = pos
         self.pos = pos*self.tileSize
-        self.data = data
+        self.data = data.copy()
         self.name = data['name']
         #rect
         self.rect = pygame.Rect(self.pos,(self.tileSize,self.tileSize))
