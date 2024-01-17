@@ -48,10 +48,27 @@ class Editor():
 
         #init level
         if level != None: 
-            self.LoadLevel(level)
+            self.LoadLevel(level[0])
+            self.name = level[1]
         else:
+            self.name = self.getName()
             self.savedata = {'offgrid':{},'grid':{}}
             self.rundata = {'offgrid':{},'grid':{}}
+
+    def getName(self):
+        names = list(walk('levels'))[0][2]
+        names = list(map(lambda s: s[:-5],names))
+        levelnum = len(names) + 1
+        name = f'level {levelnum}'
+        if name in names:
+            testnum = 1
+            testname = f'{name} ({testnum})'
+            while testname in names:
+                testnum += 1
+                testname = f'{name} ({testnum})'
+            name = testname
+
+        return name
 
     def createMenu(self):
         self.menu_groups = {
@@ -186,7 +203,7 @@ class Editor():
             self.active_group.draw(self.display)
     
     def updateMenu(self,events,mouse,game):
-        if (pygame.KEYUP,pygame.K_m) in self.inputEvents:
+        if (pygame.KEYUP,pygame.K_ESCAPE) in self.inputEvents:
             self.menu = not self.menu
         if self.menu:
             self.active_group.update(events,mouse,game)

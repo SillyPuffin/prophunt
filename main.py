@@ -56,9 +56,10 @@ class Main():
 
     def createLevelButton(self,name):
         with open(f'levels/{name}') as f:
-                level_data = json.load(f)
+                level_dict = json.load(f)
         newname = name.lower()
         newname = newname[:-5]
+        level_data = [level_dict,newname]
         newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,OpenLevel,level_data)
 
         return newbutton
@@ -102,7 +103,7 @@ class Main():
                 pygame.quit()
                 exit()
             for event in self.events:
-                if event.type == QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == QUIT:
                     pygame.quit()
                     exit()
             

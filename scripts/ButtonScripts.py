@@ -23,9 +23,11 @@ def quitEditor(game):
 
 def saveLevel(game,editor):
     #name for level
+    names = list(walk('levels'))[0][2]
+    names = list(map(lambda s: s[:-5],names))
     levelData = editor.savedata
-    levelnum = len(list(walk('levels'))[0][2]) + 1
-    with open(f"levels/level {levelnum}.json","w") as f:
+    with open(f"levels/{editor.name}.json","w") as f:
         json.dump(levelData, f)
-    game.menu_groups['LevelSelect'].elements[2].createPages(game.createLevelButton(f'level {levelnum}.json'))
+    if editor.name not in names:
+        game.menu_groups['LevelSelect'].elements[2].createPages(game.createLevelButton(f'{editor.name}.json'))
     game.active_group = game.menu_groups['main_group']
