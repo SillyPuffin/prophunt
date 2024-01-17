@@ -19,12 +19,13 @@ def switch_ButtonGroup(game,group):
 
 def quitEditor(game):
     game.GameState = 'menu'
+    game.active_group = game.menu_groups['main_group']
 
 def saveLevel(game,editor):
     #name for level
     levelData = editor.savedata
     levelnum = len(list(walk('levels'))[0][2]) + 1
-    newjson = json.dumps(levelData)
     with open(f"levels/level {levelnum}.json","w") as f:
-        json.dump(newjson, f)
-    game.menu_groups['LevelSelect'].elements[2].createPages()
+        json.dump(levelData, f)
+    game.menu_groups['LevelSelect'].elements[2].createPages(game.createLevelButton(f'level {levelnum}.json'))
+    game.active_group = game.menu_groups['main_group']

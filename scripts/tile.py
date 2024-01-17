@@ -2,14 +2,14 @@ import pygame
 from pygame.math import Vector2 as vec
 
 
-class Tile():
-    def __init__(self,tileSize,data,pos,images,tiles):
+class LevelTile():
+    def __init__(self,tileSize,data,pos,images,tiles={}):
         self.tileSize = tileSize
         self.total = ['0']
         #adddata
         self.AddData(data,pos,images,tiles)
 
-    def AddData(self,data,pos,images,tiles):
+    def AddData(self,data,pos,images,tiles={}):
         #data
         self.grid = pos
         self.pos = pos*self.tileSize
@@ -17,10 +17,20 @@ class Tile():
         self.name = data['name']
         #rect
         self.rect = pygame.Rect(self.pos,(self.tileSize,self.tileSize))
-        self.image = pygame.Surface((self.tileSize,self.tileSize))#temporray
-        self.image.fill('gold')
+        self.image = None
         #imaging
-        self.setImage(images,tiles)
+        if self.data['image']!= None and self.image == None:
+            self.imageFromString(images)
+        else:
+            self.setImage(images,tiles)
+
+    def imageFromString(self,images):
+        self.image = pygame.Surface((self.tileSize,self.tileSize),pygame.SRCALPHA)
+        self.total = self.data['image']
+        self.image.blit(images[self.total[0]],(0,0))
+        if len(self.total) > 1:
+            for s in self.total[1]:
+                self.image.blit(images[s],(0,0))
 
     def getData(self):
         data = self.data

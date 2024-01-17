@@ -47,17 +47,24 @@ class Main():
         self.init_menu_groups()
         self.active_group = self.menu_groups[activegroup]
 
-    def init_menu_groups(self):
+    def createLevelButtons(self):
         data = list(walk('levels'))[0][2]
-        levels = []
+        self.levels = []
         for name in data:
-            with open(f'levels/{name}') as f:
-                level_data = f.read()
-            newname = name.lower()
-            newname = newname[:-4]
-            newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,OpenLevel,level_data)
-            levels.append(newbutton)
-        
+            newbutton = self.createLevelButton(name)
+            self.levels.append(newbutton)
+
+    def createLevelButton(self,name):
+        with open(f'levels/{name}') as f:
+                level_data = json.load(f)
+        newname = name.lower()
+        newname = newname[:-5]
+        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,OpenLevel,level_data)
+
+        return newbutton
+
+    def init_menu_groups(self):
+        self.createLevelButtons()
         self.menu_groups = {
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical','main_group',[
@@ -74,7 +81,7 @@ class Main():
             'LevelSelect':UiContainter("LevelSelect",[
                 Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
                 Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
-                Grid((vec(window_size)/2),5,self.guiscale,self.text,(400,200),'fixed','levelselect',levels)
+                Grid((vec(window_size)/2),5,self.guiscale,self.text,(400,200),'fixed','levelselect',self.levels)
                 ]),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
                 'gui':Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,8],self.guiscale),

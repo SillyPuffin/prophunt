@@ -449,7 +449,7 @@ class Grid():
         self.name = name
         self.structure = structure
         self.elements = []
-        self.pages = {}
+        self.pages = {'0':UiContainter('page 0')}
         self.activegroup = None
         self.dictionary = {}
         #add elements
@@ -458,20 +458,22 @@ class Grid():
 
     def createPages(self,elements=None):
         self.addelements(elements)
-        arrowSize = 18
-        self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
+        if self.elements:
+            arrowSize = 18
+            self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
 
-        if self.maxwidth < 1 : print('grid width to small')
+            if self.maxwidth < 1 : print('grid width to small')
 
-        if self.structure == 'variable':
-            self.makeVarColumns()
-        elif self.structure == 'fixed':
-            self.makeFixedGrids()
+            if self.structure == 'variable':
+                self.makeVarColumns()
+            elif self.structure == 'fixed':
+                self.makeFixedGrids()
 
         #setgroup to active
         self.activegroup = self.pages['0']
         #create arrow buttons
-        self.createArrows(arrowSize)
+        if self.elements:
+            self.createArrows(arrowSize)
         
     def makeVarColumns(self):    
         self.rows = []

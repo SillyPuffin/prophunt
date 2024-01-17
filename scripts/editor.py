@@ -9,7 +9,7 @@ from pygame.math import Vector2 as vec
 from .properties import *
 from .settings import *
 from .utils import *
-from .tile import Tile
+from .tile import LevelTile
 from .gui import *
 from .ButtonScripts import *
 
@@ -38,7 +38,7 @@ class Editor():
         #grid
         self.grid = pygame.Surface((self.WINDOWSIZE),pygame.SRCALPHA)
         self.mousestill = 0
-        self.prev = vec()
+        # self.prev = vec()
         self.tile = vec()
         self.coords = None
 
@@ -47,7 +47,7 @@ class Editor():
         self.tileSize = tile_size * self.scale
 
         #init level
-        if level: 
+        if level != None: 
             self.LoadLevel(level)
         else:
             self.savedata = {'offgrid':{},'grid':{}}
@@ -72,7 +72,14 @@ class Editor():
             self.blanks[key] = (blanksurf,blankrect)
         
     def LoadLevel(self,level):
-        pass
+        self.savedata = level.copy()
+        self.rundata = {'offgrid':{},'grid':{}}
+        for key in self.savedata['grid']:
+            pos = vec(list(map(lambda x: int(x),key.split(':'))))
+            data = self.savedata['grid'][key]
+            images = self.images.tile_sets[data['name']]
+            newtile = LevelTile(self.tileSize,data,pos,images)
+            self.rundata['grid'][key] = newtile
 
     def updateNeighbours(self,pos,images):
         getkey = lambda x: f'{int(x[0])}:{int(x[1])}'
@@ -116,7 +123,7 @@ class Editor():
                     self.updateNeighbours(pos,self.images.tile_sets)
                     self.savedata['grid'][key] = self.rundata['grid'][key].getData()
             else:
-                new_tile = Tile(self.tileSize,blocks[self.active_block],pos,images,self.rundata['grid'])
+                new_tile = LevelTile(self.tileSize,blocks[self.active_block],pos,images,self.rundata['grid'])
                 self.rundata['grid'][key] = new_tile
                 self.updateNeighbours(pos,self.images.tile_sets)
                 self.savedata['grid'][key] = new_tile.getData()
