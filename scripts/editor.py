@@ -13,6 +13,7 @@ from .tile import LevelTile
 from .gui import *
 from .ButtonScripts import *
 
+import copy
 
 class Editor():
     def __init__(self,game,screen,level):
@@ -48,7 +49,7 @@ class Editor():
 
         #init level
         if level != None: 
-            self.LoadLevel(level[0])
+            self.LoadLevel(copy.deepcopy(level[0]))
             self.name = level[1]
         else:
             self.name = self.getName()
@@ -74,7 +75,8 @@ class Editor():
         self.menu_groups = {
             'main':Column(self.WINDOWSIZE/2,5,self.scale,'vertical','main',{
                 'exit':Button((0,0),(70,18),(0,100,200),self.text.render('exit',1).image,self.guiscale,quitEditor),
-                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, saveLevel, self)
+                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, saveLevel, self),
+                'saveexit':Button((0,0),(70,18),(0,100,200),self.text.render('save and exit',1).image,self.guiscale,saveQuitEditor,self)
         })
         }
         self.active_group = self.menu_groups['main']
@@ -89,7 +91,7 @@ class Editor():
             self.blanks[key] = (blanksurf,blankrect)
         
     def LoadLevel(self,level):
-        self.savedata = level.copy()
+        self.savedata = level
         self.rundata = {'offgrid':{},'grid':{}}
         for key in self.savedata['grid']:
             pos = vec(list(map(lambda x: int(x),key.split(':'))))

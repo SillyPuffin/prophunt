@@ -224,6 +224,7 @@ class Button():
         self.bimage = pygame.Surface(UpScaledSize)
         self.bimage.fill(colour)
         self.bimage.blit(icon,(UpScaledSize[0]/2 - icon.get_width()/2,UpScaledSize[1]/2 - icon.get_height()/2))
+        self.image = self.bimage.copy()
 
         self.func = func
         self.down = False
@@ -438,11 +439,11 @@ class Column():
 
 #gridiigidiy gridding :)
 class Grid():
-    def __init__(self,center,spacing,scale,text,size,structure,name=None,elements=None) -> None:
+    def __init__(self,center,spacing,guiscale,scale,text,size,structure,name=None,elements=None) -> None:
         self.center = vec(center)
         self.unscaledSpacing = spacing
-        self.spacing = spacing * scale
-        self.scale = scale
+        self.spacing = spacing * guiscale
+        self.scale = guiscale
         self.text = text
         self.type = 'grid'
         self.size = vec(size) * scale
@@ -468,7 +469,8 @@ class Grid():
                 self.makeVarColumns()
             elif self.structure == 'fixed':
                 self.makeFixedGrids()
-
+        else:
+            self.pages = {'0':UiContainter('page 0')}
         #setgroup to active
         self.activegroup = self.pages['0']
         #create arrow buttons

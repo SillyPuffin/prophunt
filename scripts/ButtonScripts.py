@@ -1,4 +1,5 @@
 import pygame
+import os
 from os import walk
 import json
 
@@ -12,6 +13,7 @@ def CreateNewLevel(game):
 def OpenLevel(game,level):
     game.GameState = 'editor'
     game.CreateEditor(level)
+    closeLevelOptions(game)
 
 def switch_ButtonGroup(game,group):
     game.active_group = game.menu_groups[group]
@@ -19,7 +21,22 @@ def switch_ButtonGroup(game,group):
 
 def quitEditor(game):
     game.GameState = 'menu'
-    game.active_group = game.menu_groups['main_group']
+    game.editor = None
+    
+def saveQuitEditor(game,editor):
+    saveLevel(game,editor)
+    quitEditor(game)
+
+def deleteLevel(game,name):
+    os.remove(f'levels/{name}.json')
+    game.createLevelButtons()
+    game.menu_groups['levelSelect'].elements[2].elements = []
+    game.menu_groups['levelSelect'].elements[2].createPages(game.levels)
+    closeLevelOptions(game)
+
+def closeLevelOptions(game):
+    game.active_group = game.menu_groups['levelSelect']
+    del game.menu_groups['levelOption']
 
 def saveLevel(game,editor):
     #name for level
@@ -29,5 +46,5 @@ def saveLevel(game,editor):
     with open(f"levels/{editor.name}.json","w") as f:
         json.dump(levelData, f)
     if editor.name not in names:
-        game.menu_groups['LevelSelect'].elements[2].createPages(game.createLevelButton(f'{editor.name}.json'))
-    game.active_group = game.menu_groups['main_group']
+        game.menu_groups['levelSelect'].elements[2].createPages(game.createLevelButton(f'{editor.name}.json'))
+   

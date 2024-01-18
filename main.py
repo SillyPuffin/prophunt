@@ -60,9 +60,18 @@ class Main():
         newname = name.lower()
         newname = newname[:-5]
         level_data = [level_dict,newname]
-        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,OpenLevel,level_data)
+        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,self.levelOptions,level_data)
 
         return newbutton
+
+    def levelOptions(self,game,data):
+        self.menu_groups['levelOption'] = Column(vec(window_size)/2,5,self.guiscale,'vertical','levelOption',{
+            'rename':Button((0,0),(70,18),(0,100,200),self.text.render('rename').image,self.guiscale),
+            'edit':Button((0,0),(70,18),(0,100,200),self.text.render('edit').image,self.guiscale,OpenLevel,data),
+            'delete':Button((0,0),(70,18),(0,100,200),self.text.render('delete').image,self.guiscale,deleteLevel,data[1]),
+            'back':Button((0,0),(70,18),(0,100,200),self.text.render('back').image,self.guiscale,closeLevelOptions)
+        })
+        self.active_group = self.menu_groups['levelOption']
 
     def init_menu_groups(self):
         self.createLevelButtons()
@@ -70,7 +79,7 @@ class Main():
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical','main_group',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.guiscale,switch_ButtonGroup,'play_group'),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'LevelSelect'),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'levelSelect'),
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.guiscale,switch_ButtonGroup,'settings'),
                 Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.guiscale,QuitGame)
                 ]),
@@ -79,13 +88,13 @@ class Main():
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.guiscale),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
                 ]),
-            'LevelSelect':UiContainter("LevelSelect",[
+            'levelSelect':UiContainter("levelSelect",[
                 Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
                 Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
-                Grid((vec(window_size)/2),5,self.guiscale,self.text,(400,200),'fixed','levelselect',self.levels)
+                Grid((vec(window_size)/2),5,self.guiscale,self.scale,self.text,(400,200),'fixed','levelselect',self.levels)
                 ]),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
-                'gui':Slider((0,0),(70,15),[(0,200,0),(255,0,0),(200,200,200)],self.guiscale,1,[1,8],self.guiscale),
+                'gui':Slider((0,0),(70,15),[(0,100,200),(0,75,200),(0,120,200)],self.guiscale,1,[1,8],self.guiscale),
                 'backbutton':Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
                 })
             
@@ -130,7 +139,6 @@ class Main():
             if self.GameState == 'menu':
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
-
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)
