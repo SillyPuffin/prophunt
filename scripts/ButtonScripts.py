@@ -44,7 +44,7 @@ def saveLevel(game,editor):
     names = list(map(lambda s: s[:-5],names))
     levelData = editor.savedata
     with open(f"levels/{editor.name}.json","w") as f:
-        json.dump(levelData, f)
+        json.dump(levelData, f,indent = 2)
     if editor.name not in names:
         game.menu_groups['levelSelect'].elements[2].createPages(game.createLevelButton(f'{editor.name}.json'))
    
