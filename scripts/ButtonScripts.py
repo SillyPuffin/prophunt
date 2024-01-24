@@ -43,6 +43,7 @@ def saveLevel(game,editor):
     names = list(walk('levels'))[0][2]
     names = list(map(lambda s: s[:-5],names))
     levelData = editor.savedata
+    editor.saving = True
     with open(f"levels/{editor.name}.json","w") as f:
         json.dump(levelData, f,indent = 2)
     if editor.name not in names:

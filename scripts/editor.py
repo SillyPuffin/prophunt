@@ -34,6 +34,10 @@ class Editor():
 
         #menu
         self.menu = False
+        self.saveindicator = self.text.render('saving...', 1, False, (0,200,0))
+        self.saveindicator.rect.bottomleft = (2*self.scale,self.WINDOWSIZE[1]-2*self.scale)
+        self.saving = False
+        self.saved = None
         self.createMenu()
 
         #grid
@@ -203,6 +207,17 @@ class Editor():
         if self.menu:
             self.display.blit(self.blanks['main'][0],self.blanks['main'][1])
             self.active_group.draw(self.display)
+
+        if self.saving :
+            if self.saved == None:
+                self.saved = time.time()
+            current = time.time()
+            if (current - self.saved) >= 1:
+                self.saving = False
+                self.saved = None
+
+        if self.saving:
+            self.saveindicator.draw(self.display)
     
     def updateMenu(self,events,mouse,game):
         if (pygame.KEYUP,pygame.K_ESCAPE) in self.inputEvents:
