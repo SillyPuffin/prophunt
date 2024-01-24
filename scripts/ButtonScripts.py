@@ -29,9 +29,9 @@ def saveQuitEditor(game,editor):
 
 def deleteLevel(game,name):
     os.remove(f'levels/{name}.json')
-    game.createLevelButtons()
-    game.menu_groups['levelSelect'].elements[2].elements = []
-    game.menu_groups['levelSelect'].elements[2].createPages(game.levels)
+    game.menu_groups['levelSelect'].dictionary['levels'].removeItem(name)
+    if name in game.levels.keys():
+        del game.levels[name]
     closeLevelOptions(game)
 
 def closeLevelOptions(game):
@@ -46,5 +46,6 @@ def saveLevel(game,editor):
     with open(f"levels/{editor.name}.json","w") as f:
         json.dump(levelData, f,indent = 2)
     if editor.name not in names:
-        game.menu_groups['levelSelect'].elements[2].createPages(game.createLevelButton(f'{editor.name}.json'))
-   
+        game.menu_groups['levelSelect'].dictionary['levels'].createPages({editor.name:game.createLevelButton(f'{editor.name}')})
+    else:
+        game.menu_groups['levelSelect'].dictionary['levels'].dictionary[editor.name].arg = [levelData, editor.name]

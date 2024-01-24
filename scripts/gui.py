@@ -457,6 +457,16 @@ class Grid():
         if elements != None:
             self.createPages(elements)
 
+    def fillElements(self):
+        self.elements = []
+        for key in self.dictionary:
+            self.elements.append(self.dictionary[key])
+
+    def removeItem(self, name):
+        del self.dictionary[name]
+        self.fillElements()
+        self.createPages()
+
     def createPages(self,elements=None):
         self.addelements(elements)
         if self.elements:
@@ -519,9 +529,8 @@ class Grid():
             for item in elements:
                 self.elements.append(item)
         elif type(elements) == dict:
-            for item in list(elements.values()):
-                self.elements.append(item)
-            self.dictionary = elements
+            self.dictionary.update(elements)
+            self.fillElements()
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
 

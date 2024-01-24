@@ -49,18 +49,18 @@ class Main():
 
     def createLevelButtons(self):
         data = list(walk('levels'))[0][2]
-        self.levels = []
+        self.levels = {}
         for name in data:
-            newbutton = self.createLevelButton(name)
-            self.levels.append(newbutton)
+            newname = name.lower()
+            newname = newname[:-5]
+            newbutton = self.createLevelButton(newname)
+            self.levels[newname] = newbutton
 
     def createLevelButton(self,name):
-        with open(f'levels/{name}') as f:
+        with open(f'levels/{name}.json') as f:
                 level_dict = json.load(f)
-        newname = name.lower()
-        newname = newname[:-5]
-        level_data = [level_dict,newname]
-        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(newname,1,False).image,self.guiscale,self.levelOptions,level_data)
+        level_data = [level_dict,name]
+        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,self.levelOptions,level_data)
 
         return newbutton
 
@@ -88,11 +88,11 @@ class Main():
                 Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.guiscale),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
                 ]),
-            'levelSelect':UiContainter("levelSelect",[
-                Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
-                Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
-                Grid((vec(window_size)/2),5,self.guiscale,self.scale,self.text,(400,200),'fixed','levelselect',self.levels)
-                ]),
+            'levelSelect':UiContainter("levelSelect",{
+                'back':Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
+                'new':Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
+                'levels':Grid((vec(window_size)/2),5,self.guiscale,self.scale,self.text,(400,200),'fixed','levelselect',self.levels)
+            }),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
                 'gui':Slider((0,0),(70,15),[(0,100,200),(0,75,200),(0,120,200)],self.guiscale,1,[1,8],self.guiscale),
                 'backbutton':Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
