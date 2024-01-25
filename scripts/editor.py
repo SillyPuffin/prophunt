@@ -79,11 +79,14 @@ class Editor():
         self.menu_groups = {
             'main':Column(self.WINDOWSIZE/2,5,self.scale,'vertical','main',{
                 'exit':Button((0,0),(70,18),(0,100,200),self.text.render('exit',1).image,self.guiscale,quitEditor),
-                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, saveLevel, self),
-                'saveexit':Button((0,0),(70,18),(0,100,200),self.text.render('save and exit',1).image,self.guiscale,saveQuitEditor,self)
+                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, self.saveOptions, False),
+                'saveexit':Button((0,0),(70,18),(0,100,200),self.text.render('save and exit',1).image,self.guiscale,self.saveOptions,True)
         })
         }
         self.active_group = self.menu_groups['main']
+        self.makeMenuBack()
+
+    def makeMenuBack(self):
         self.blanks = {}
         for key in self.menu_groups:
             blanksize = vec(self.menu_groups[key].rect.size)
@@ -93,7 +96,29 @@ class Editor():
             blanksurf = pygame.Surface(blanksize,pygame.SRCALPHA)
             pygame.draw.rect(blanksurf,(0,0,0,100),((0,0),(blanksize)))
             self.blanks[key] = (blanksurf,blankrect)
+
+    #button script
+    def saveOptions(self,game,doQuit):
+        temp = {
+            'confirm':None,
+            'cancel':Button((0,0),(70,18),(0,100,200),self.text.render('cancel').image,self.guiscale,closeSaveOptions,self)
+        }
+        #CHECKING IF SAVE AND QUIT OR JUST SAVE
+        if doQuit:
+            temp['confirm'] = Button((0,0),(70,18),(0,100,200),self.text.render('confirm').image,self.guiscale,saveQuitEditor, self)
+        else:
+            temp['confirm'] = Button((0,0),(70,18),(0,100,200),self.text.render('confirm').image,self.guiscale, saveLevel, self)
         
+        buttons = {
+        'rename':Button((0,0),(145,18),(0,100,200),self.text.render('rename').image,self.guiscale),
+        'column':Column((0,0),5,self.guiscale,'horizontal','yes/no',temp)
+        }
+
+        self.menu_groups['saveOption'] = Column(vec(self.WINDOWSIZE)/2,5,self.guiscale,'vertical','saveOption',buttons)
+
+        self.active_group = self.menu_groups['saveOption']
+        self.makeMenuBack()
+
     def LoadLevel(self,level):
         self.savedata = level
         self.rundata = {'offgrid':{},'grid':{}}

@@ -368,7 +368,7 @@ class Column():
         self.pos = pos
         self.direction = direction
         self.elements = []
-        self.dictionary = None
+        self.dictionary = {}
         self.type = 'column'
         self.spacing = spacing * scale
         self.name = name
@@ -381,14 +381,18 @@ class Column():
         if elements != None:
             self.AddElement(elements)
 
+    def fillElements(self):
+        self.elements = []
+        for key in self.dictionary:
+            self.elements.append(self.dictionary[key])
+
     def AddElement(self,elements=None): 
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
         elif type(elements) == dict:
-            for item in list(elements.values()):
-                self.elements.append(item)
-            self.dictionary = elements
+            self.dictionary.update(elements)
+            self.fillElements()
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
 
@@ -643,18 +647,22 @@ class UiContainter():
     def __init__(self,name=None, elements=None):
         self.elements = []
         self.name = name
-        self.dictionary = None
+        self.dictionary = {}
         self.type = 'container'
         self.AddElement(elements)
+
+    def fillElements(self):
+        self.elements = []
+        for key in self.dictionary:
+            self.elements.append(self.dictionary[key])
 
     def AddElement(self,elements=None):
         if type(elements) == list:
             for item in elements:
                 self.elements.append(item)
         elif type(elements) == dict:
-            for item in list(elements.values()):
-                self.elements.append(item)
-            self.dictionary = elements
+            self.dictionary.update(elements)
+            self.fillElements()
         elif hasattr(elements,'__dict__'):
             self.elements.append(elements)
     

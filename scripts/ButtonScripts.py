@@ -36,7 +36,14 @@ def deleteLevel(game,name):
 
 def closeLevelOptions(game):
     game.active_group = game.menu_groups['levelSelect']
-    del game.menu_groups['levelOption']
+    deleteMenuGroup(game,[game.menu_groups, 'levelOption'])
+
+def closeSaveOptions(game,editor):
+    editor.active_group = editor.menu_groups['main']
+    deleteMenuGroup(game,[editor.menu_groups,'saveOption'])
+
+def deleteMenuGroup(game,item):
+    del item[0][item[1]]
 
 def saveLevel(game,editor):
     #name for level
