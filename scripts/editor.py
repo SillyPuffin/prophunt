@@ -78,12 +78,14 @@ class Editor():
     def createMenu(self):
         self.menu_groups = {
             'main':Column(self.WINDOWSIZE/2,5,self.scale,'vertical','main',{
-                'exit':Button((0,0),(70,18),(0,100,200),self.text.render('exit',1).image,self.guiscale,quitEditor),
-                'save':Button((0,0),(70,18),(0,100,200),self.text.render('save',1).image,self.guiscale, self.saveOptions, False),
-                'saveexit':Button((0,0),(70,18),(0,100,200),self.text.render('save and exit',1).image,self.guiscale,self.saveOptions,True)
+                'saveexit':Button((0,0),(80,18),(0,100,200),self.text.render('save and exit',1).image,self.guiscale,self.saveOptions,True),
+                'save':Button((0,0),(80,18),(0,100,200),self.text.render('save',1).image,self.guiscale, self.saveOptions, False),
+                'exit':Button((0,0),(80,18),(0,100,200),self.text.render('exit',1).image,self.guiscale,quitEditor)
+                
         })
         }
         self.active_group = self.menu_groups['main']
+        self.active_key = 'main'
         self.makeMenuBack()
 
     def makeMenuBack(self):
@@ -110,13 +112,15 @@ class Editor():
             temp['confirm'] = Button((0,0),(70,18),(0,100,200),self.text.render('confirm').image,self.guiscale, saveLevel, self)
         
         buttons = {
-        'rename':Button((0,0),(145,18),(0,100,200),self.text.render('rename').image,self.guiscale),
+        'rename':Button((0,0),(145,18),(0,100,200),self.text.render(self.name).image,self.guiscale),
         'column':Column((0,0),5,self.guiscale,'horizontal','yes/no',temp)
         }
 
         self.menu_groups['saveOption'] = Column(vec(self.WINDOWSIZE)/2,5,self.guiscale,'vertical','saveOption',buttons)
+        buttons['column'].centerElements()
 
         self.active_group = self.menu_groups['saveOption']
+        self.active_key = 'saveOption'
         self.makeMenuBack()
 
     def LoadLevel(self,level):
@@ -230,7 +234,7 @@ class Editor():
 
     def drawMenu(self):
         if self.menu:
-            self.display.blit(self.blanks['main'][0],self.blanks['main'][1])
+            self.display.blit(self.blanks[self.active_key][0],self.blanks[self.active_key][1])
             self.active_group.draw(self.display)
 
         if self.saving :

@@ -40,6 +40,7 @@ def closeLevelOptions(game):
 
 def closeSaveOptions(game,editor):
     editor.active_group = editor.menu_groups['main']
+    editor.active_key = 'main'
     deleteMenuGroup(game,[editor.menu_groups,'saveOption'])
 
 def deleteMenuGroup(game,item):

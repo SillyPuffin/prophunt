@@ -145,6 +145,7 @@ class Main():
             self.clock.tick(fps)
             pygame.display.update()
 
+
 #running
 if __name__ == '__main__':
     game = Main()

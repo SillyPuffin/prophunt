@@ -362,8 +362,51 @@ class Slider():
     def draw(self,screen):
         screen.blit(self.image,self.rect)
 
+
+class UiContainter():
+    def __init__(self,name=None, elements=None):
+        self.elements = []
+        self.name = name
+        self.dictionary = {}
+        self.type = 'container'
+        self.AddElement(elements)
+
+    def fillElements(self):
+        self.elements = []
+        for key in self.dictionary:
+            self.elements.append(self.dictionary[key])
+
+    def removeItem(self, name):
+        del self.dictionary[name]
+        self.fillElements()
+
+    def AddElement(self,elements=None):
+        if type(elements) == list:
+            for item in elements:
+                self.elements.append(item)
+        elif type(elements) == dict:
+            self.dictionary.update(elements)
+            self.fillElements()
+        elif hasattr(elements,'__dict__'):
+            self.elements.append(elements)
+    
+    def update(self,events, mouse, game=None):
+        for item in self.elements:
+            item.update(events,mouse,game)
+    
+    def collidepoint(self,point):
+        for item in self.elements:
+            if item.collidepoint(point):
+                return True
+            else:
+                return False
+
+    def draw(self,screen):
+        for item in self.elements:
+            item.draw(screen)
+
 #can make vertical and horizontal columns
-class Column():
+class Column(UiContainter):
     def __init__(self,pos,spacing,scale,direction,name=None, elements = None):
         self.pos = pos
         self.direction = direction
@@ -379,23 +422,9 @@ class Column():
         self.rect.center = self.pos
 
         if elements != None:
-            self.AddElement(elements)
+            self.createColumn(elements)
 
-    def fillElements(self):
-        self.elements = []
-        for key in self.dictionary:
-            self.elements.append(self.dictionary[key])
-
-    def AddElement(self,elements=None): 
-        if type(elements) == list:
-            for item in elements:
-                self.elements.append(item)
-        elif type(elements) == dict:
-            self.dictionary.update(elements)
-            self.fillElements()
-        elif hasattr(elements,'__dict__'):
-            self.elements.append(elements)
-
+    def centerElements(self):
         #column
         if self.direction == 'vertical':
             self.height = 0
@@ -426,12 +455,10 @@ class Column():
                 item.rect = item.rect.move(direction)
             self.rect = pygame.Rect(0,0,self.width,self.height); self.rect.center = self.pos
 
-    def collidepoint(self,point):
-        for item in self.elements:
-            if item.collidepoint(point):
-                return True
-            else:
-                return False
+    def createColumn(self,elements=None): 
+        self.AddElement(elements)
+        
+        self.centerElements()
 
     def update(self,events, mouse, game= None):
         for item in self.elements:
@@ -442,7 +469,7 @@ class Column():
             item.draw(screen)
 
 #gridiigidiy gridding :)
-class Grid():
+class Grid(UiContainter):
     def __init__(self,center,spacing,guiscale,scale,text,size,structure,name=None,elements=None) -> None:
         self.center = vec(center)
         self.unscaledSpacing = spacing
@@ -461,18 +488,13 @@ class Grid():
         if elements != None:
             self.createPages(elements)
 
-    def fillElements(self):
-        self.elements = []
-        for key in self.dictionary:
-            self.elements.append(self.dictionary[key])
-
     def removeItem(self, name):
         del self.dictionary[name]
         self.fillElements()
         self.createPages()
 
     def createPages(self,elements=None):
-        self.addelements(elements)
+        self.AddElement(elements)
         if self.elements:
             arrowSize = 18
             self.maxwidth = self.size[0]-(self.spacing * 4 + arrowSize*self.scale*2)
@@ -527,16 +549,6 @@ class Grid():
         self.thisrow = []
         self.width = -self.spacing
         self.rows.append(newcolumn)
-        
-    def addelements(self,elements=None):
-        if type(elements) == list:
-            for item in elements:
-                self.elements.append(item)
-        elif type(elements) == dict:
-            self.dictionary.update(elements)
-            self.fillElements()
-        elif hasattr(elements,'__dict__'):
-            self.elements.append(elements)
 
     def makeFixedGrids(self):
         buttonSize = self.elements[0].rect.size
@@ -609,7 +621,7 @@ class Grid():
     def genPageVar(self,index):
         grid = Column(self.center,self.unscaledSpacing,self.scale,'vertical','grid',self.thiscolumn)
         for element in grid.elements:
-            element.AddElement()
+            element.centerElements()
         container = UiContainter(f'page {index}')
         container.AddElement(grid)
         self.height = -self.spacing
@@ -643,43 +655,6 @@ class Grid():
     def collidepoint(self,point):
         self.activegroup.collidepoint(point)
 
-class UiContainter():
-    def __init__(self,name=None, elements=None):
-        self.elements = []
-        self.name = name
-        self.dictionary = {}
-        self.type = 'container'
-        self.AddElement(elements)
-
-    def fillElements(self):
-        self.elements = []
-        for key in self.dictionary:
-            self.elements.append(self.dictionary[key])
-
-    def AddElement(self,elements=None):
-        if type(elements) == list:
-            for item in elements:
-                self.elements.append(item)
-        elif type(elements) == dict:
-            self.dictionary.update(elements)
-            self.fillElements()
-        elif hasattr(elements,'__dict__'):
-            self.elements.append(elements)
-    
-    def update(self,events, mouse, game=None):
-        for item in self.elements:
-            item.update(events,mouse,game)
-    
-    def collidepoint(self,point):
-        for item in self.elements:
-            if item.collidepoint(point):
-                return True
-            else:
-                return False
-
-    def draw(self,screen):
-        for item in self.elements:
-            item.draw(screen)
 
 
 
