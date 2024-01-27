@@ -17,8 +17,8 @@ if remainder == 0:
 else:
     exact = False
 Scale = max(screensize)// base_size[screensize.index(max(screensize))]
-if Scale > 4:
-    Scale = 4
+# if Scale > 4:
+#     Scale = 4
 window_size = (base_size[0]*Scale,base_size[1]*Scale)
 
 #hello i like cheese
