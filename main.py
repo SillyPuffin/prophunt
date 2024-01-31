@@ -60,7 +60,7 @@ class Main():
         with open(f'levels/{name}.json') as f:
                 level_dict = json.load(f)
         level_data = [level_dict,name]
-        newbutton = Button((window_size[0],window_size[1]),(70,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,self.levelOptions,level_data)
+        newbutton = Button((window_size[0],window_size[1]),(90,18),(0,100,200),self.text.render(name,0.75,False).image,self.guiscale,self.levelOptions,level_data)
 
         return newbutton
 
@@ -94,7 +94,7 @@ class Main():
                 'levels':Grid((vec(window_size)/2),5,self.guiscale,self.scale,self.text,(400,200),'fixed','levelselect',self.levels)
             }),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
-                'gui':Slider((0,0),(70,15),[(0,100,200),(0,75,200),(0,120,200)],self.guiscale,1,[1,8],self.guiscale),
+                'gui':Slider((0,0),(70,15),[(0,100,200),(0,75,200),(0,120,200)],self.guiscale,1,[1,8],resizeMenus,self.guiscale),
                 'backbutton':Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
                 })
             
@@ -122,12 +122,12 @@ class Main():
             ####menu
             if self.GameState == 'menu':
                 #menu
-                if self.active_group.name == 'settings':
-                    if self.guiscale != self.active_group.dictionary['gui'].barvalue:
-                        value = self.active_group.dictionary['gui'].offset // self.guiscale
-                        self.guiscale = self.active_group.dictionary['gui'].barvalue
-                        self.regenMenus(list(self.menu_groups.keys())[list(self.menu_groups.values()).index(self.active_group)])
-                        self.active_group.dictionary['gui'].offset = value * self.guiscale
+                # if self.active_group.name == 'settings':
+                #     if self.guiscale != self.active_group.dictionary['gui'].barvalue:
+                #         value = self.active_group.dictionary['gui'].offset // self.guiscale
+                #         self.guiscale = self.active_group.dictionary['gui'].barvalue
+                #         self.regenMenus(list(self.menu_groups.keys())[list(self.menu_groups.values()).index(self.active_group)])
+                #         self.active_group.dictionary['gui'].offset = value * self.guiscale
                 self.active_group.update(self.events,self.mouse,self)
 
             elif self.GameState == 'editor':

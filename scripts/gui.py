@@ -80,6 +80,8 @@ class Text():
     def render(self,text,size=1,box = False,clr=None):
         FixedTextbox = False
         size = size * self.scale
+        if size < 1:
+            size = 1
         box = scale(self.scale,box)
         if not box:
             string = str(text)
@@ -282,7 +284,7 @@ class Button():
         screen.blit(self.image,self.rect)
 
 class Slider():
-    def __init__(self,pos,size,colour,_scale,padding=1,value=[1,2],default=1) -> None:
+    def __init__(self,pos,size,colour,_scale,padding=1,value=[1,2],func = None,default=1) -> None:
         #sizing
         pos = scale(_scale,pos)
         size = scale(_scale,size)
@@ -300,16 +302,22 @@ class Slider():
         self.bar = pygame.Rect((vec(pos)+(padding*_scale,padding*_scale)),(vec(size)-(padding*2*_scale,padding*2*_scale)))
 
         #selection
+        self.func = func
         self.baractive = False
         self.range = max(value) - (min(value)-1)
         self.values = value
         if self.range > 1:
             self.increment = self.bar.width / (self.range - 1)
+        else:
+            self.increment = 1
         self.offset = (default -min(self.values)) * self.increment
-        self.current = default
-        self.barvalue = default  
+        self.current = default 
 
         #image
+        if self.range > 1:
+            self.barsize = self.increment * (self.current - 1)
+        else:
+            self.barsize = self.bar.width
         self.bimage = pygame.Surface(size)
         self.bimage.fill(self.colour)
         pygame.draw.rect(self.bimage,self.accent,((padding*_scale,padding*_scale),self.bar.size))
@@ -325,7 +333,9 @@ class Slider():
                 if self.rect.collidepoint(mouse):
                     self.baractive = True
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                self.barvalue = self.current
+                self.baractive = False
+                if self.func:
+                    self.func(game, self.current)
 
         if self.baractive:
             self.offset = vec(mouse).x - self.bar.topleft[0]
@@ -338,21 +348,25 @@ class Slider():
         
             fullness = self.offset / self.increment #how many values it is along the slider
             number = round(fullness) #round to int
-            self.current = min(self.values) + number
-            
+            if self.range > 1:
+                self.current = min(self.values) + number
+            else:
+                self.current = 1
         
-        if not mouse_buttons()[0]:
-            self.baractive = False
+            if self.range > 1:
+                self.barsize = self.increment * (number)
+            else:
+                self.barsize = self.bar.width
 
         if self.rect.collidepoint(mouse):
             self.image = self.bimage.copy()
-            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
+            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.barsize,self.bar.height)))
             self.drawoutline()
             amount = game.text.render(f'gui scale:{self.current}',1).image
             self.image.blit(amount,(self.rect.width/2-amount.get_width()/2,self.rect.height/2-amount.get_height()/2))
         else:
             self.image = self.bimage.copy()
-            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.offset,self.bar.height)))
+            pygame.draw.rect(self.image,self.barColour,((self.padding*self.scale,self.padding*self.scale),(self.barsize,self.bar.height)))
             amount = game.text.render(f'gui scale:{self.current}',1).image
             self.image.blit(amount,(self.rect.width/2-amount.get_width()/2,self.rect.height/2-amount.get_height()/2))
 
@@ -490,6 +504,7 @@ class Grid(UiContainter):
 
     def removeItem(self, name):
         del self.dictionary[name]
+        self.pages = {'0':UiContainter('page 0')}
         self.fillElements()
         self.createPages()
 

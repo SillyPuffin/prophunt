@@ -3,6 +3,10 @@ import os
 from os import walk
 import json
 
+def resizeMenus(game,size):
+    game.guiscale = size
+    game.regenMenus('settings')
+
 def QuitGame(game):
     game.quit = True
 
