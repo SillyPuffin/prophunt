@@ -122,12 +122,6 @@ class Main():
             ####menu
             if self.GameState == 'menu':
                 #menu
-                # if self.active_group.name == 'settings':
-                #     if self.guiscale != self.active_group.dictionary['gui'].barvalue:
-                #         value = self.active_group.dictionary['gui'].offset // self.guiscale
-                #         self.guiscale = self.active_group.dictionary['gui'].barvalue
-                #         self.regenMenus(list(self.menu_groups.keys())[list(self.menu_groups.values()).index(self.active_group)])
-                #         self.active_group.dictionary['gui'].offset = value * self.guiscale
                 self.active_group.update(self.events,self.mouse,self)
 
             elif self.GameState == 'editor':

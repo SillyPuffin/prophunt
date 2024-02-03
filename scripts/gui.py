@@ -103,7 +103,6 @@ class Text():
             surface = self.swap_pallet(surface,clr)
         #scaling to scale
         # surface = self.scale_image(surface,self.scale)
-
         surface.set_colorkey(0)
         if FixedTextbox:
             _class = TextBox(surface,pygame.Surface((box[0],box[1])))
