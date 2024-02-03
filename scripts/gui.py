@@ -48,6 +48,7 @@ class Text():
     
     def cutLetters(self, image):
         self.letters = {}
+        self.letLengths = {}
         count = 0
         order = " abcdefghijklmnopqrstuvwxyz,'.:-?!1234567890/\()[]<>"
         self.lstart = None
@@ -65,6 +66,9 @@ class Text():
                 count +=1
             if p == (255,0,0):
                 self.lstart = pixel
+        
+        for key in self.letters:
+            self.letLengths[key] = self.letters[key].get_width()
     
     def get_letter(self, image, pos, size):
         letter = image.subsurface((pos,size))
@@ -72,24 +76,128 @@ class Text():
         return letter
 
     def render(self, text, fontSize, clr=None, width=0):
-        size = self.scale * fontSize
-        self.split_text = self.splitWords(text, size)
-        print(self.split_text)
-        if width > 0:
-            pass
+        self.size = self.scale * fontSize
+        self.width = width * self.scale
+        self.split_text = self.splitText(str(text))
+        #making a dictionary that holds the scaled size of each letter
+        self.sizedLetLengths = {}
+        for key in self.letLengths:
+            self.sizedLetLengths[key] = self.letLengths[key] * self.size
+        #writes all text into self.lines
+        self.writeLines()
+        surface = self.drawLines()
+        #pallete swap if necessary
+        if clr:
+            surface = self.swap_pallet(surface, clr)
 
-    def splitWords(self,text,size):
-        words = text.split(' ')
-        split_text = [[word,self.getLength(word,size)] for word in words]
+        return Word_Image(surface)
+
+    def drawLines(self):
+        if self.width == 0:
+            maxwidth = max([self.getLength(line) for line in self.lines])
+            #if width is unspecified do it to the largest line width
+            surface = pygame.Surface((maxwidth,self.letters[' '].get_height()*self.size*len(self.lines)))
+        else:
+            surface = pygame.Surface((self.width,self.letters[' '].get_height()*self.size*len(self.lines)))
+        #blitting
+        scaleLetters = {}
+        for key in self.letters:
+            scaleLetters[key] = pygame.transform.scale(self.letters[key],(self.sizedLetLengths[key],self.letters[key].get_height()*self.size))
+        for y,line in enumerate(self.lines):
+            x_offset = 0
+            for letter in line:
+                surface.blit(scaleLetters[letter],(x_offset,y*scaleLetters[' '].get_height()))
+                x_offset += self.sizedLetLengths[letter] + self.spacing * self.size
+        surface.set_colorkey((0,0,0))
+
+        return surface
+
+    def writeLines(self):
+        self.lines = []
+        self.line = ''
+        self.lineWidth = 0
+        for word in self.split_text:
+            if word[0] == '\n':
+                #newline character
+                self.lines.append(self.line)
+                self.lineWidth = 0
+                self.line = ''
+            elif self.width == 0:
+                if not self.line:
+                    self.line += word[0]
+                else:
+                    self.line += ' ' + word[0]
+            elif self.width > 0 and word[1] > self.width:
+                #when word is too big of a line it chops it
+                if self.line:
+                    self.lines.append(self.line)
+                self.lineWidth = 0
+                self.splitWord(word)
+            elif self.width > 0 and self.lineWidth < self.width:
+                self.addWord(word)
+        if self.line:
+            self.lines.append(self.line)
+
+    def addWord(self,word):
+        #only add space if word before it
+        if not self.line:
+            wordWidth = word[1]
+        else:
+            wordWidth = self.space * self.size + word[1]
+        testWidth = self.lineWidth + wordWidth
+        #checking to make sure there is enought space
+        if testWidth <= self.width:
+            if not self.line:
+                self.line += word[0]
+            else:
+                self.line += ' ' + word[0]
+            lineWidth += wordWidth
+            if lineWidth == self.width:
+                #If the same next line cos no more will fit
+                self.lines.append(self.line)
+                self.lineWidth = 0 
+                self.line = ''
+        else:
+            #if testwidth goes over, new line and add word to it
+            self.lines.append(self.line)
+            self.lineWidth = word[1]
+            self.line = word[0]
+
+    def splitWord(self,word):
+        self.line = ''
+        self.lineWidth = 0
+        for letter in word[0]:
+            if letter != '\n':
+                testWidth = self.lineWidth + self.spacing * self.size + self.sizedLetLengths[letter]
+                #making sure it doesnt exceed width or is only one character
+                if testWidth <= self.width or len(self.line) == 0:
+                    self.line += letter
+                    self.lineWidth += self.spacing * self.size + self.sizedLetLengths[letter]
+                    if self.lineWidth == self.width:
+                        self.lines.append(self.line)
+                        self.line = ''
+                        self.lineWidth = 0
+            #resetting line
+            if letter == '\n' or testWidth > self.width:
+                self.lines.append(self.line)
+                self.line = letter
+                self.lineWidth = self.sizedLetLengths[letter] + self.spacing * self.size
+
+    def splitText(self,text):
+        words = text.split('\n')
+        words = ' \n '.join(words)
+        words = words.split(' ')
+        print(words)
+        split_text = [[word,self.getLength(word)] for word in words]
 
         return split_text
 
-    def getLength(self,word,size):
+    def getLength(self,word):
         if word != "\n":
-            width = -self.spacing* size
+            width = 0
+            # print(type(word))
             for letter in word:
-                if letter != '\n':
-                    width += self.letters[letter].get_width() * size + self.spacing * size
+                width += self.letters[letter].get_width() * self.size + self.spacing * self.size
         elif word == "\n":
             width = 0
         
@@ -273,7 +381,6 @@ class _Text():
 
         return surface
 
-    
     
 class Button():
     def __init__(self,pos,size,colour,icon,scale,func=None,arg=None):

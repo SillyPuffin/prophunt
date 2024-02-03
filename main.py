@@ -40,7 +40,11 @@ class Main():
         self.font = pygame.image.load('graphics/font_sheet.png').convert()
         self.text = Text(self.guiscale,self.font,1)
         self.editor = None
+
+        self.word = self.text.render('happeningggg',1,(0,255,0),50)
+
         self.init_menu_groups()
+        #self.word.rect.topleft = (0,0)
 
     def regenMenus(self,activegroup):
         self.text = Text(self.guiscale,self.font,1)
@@ -133,6 +137,7 @@ class Main():
             if self.GameState == 'menu':
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
+                self.word.draw(self.screen)
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)
