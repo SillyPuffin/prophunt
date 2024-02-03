@@ -40,6 +40,71 @@ class TextBox():
 
 class Text():
     def __init__(self,scale,image,spacing):
+        self.scale = scale
+        self.spacing = spacing
+        #getting letters from spprite sheet
+        self.cutLetters(image)
+        self.space = self.letters[' '].get_width() + self.spacing
+    
+    def cutLetters(self, image):
+        self.letters = {}
+        count = 0
+        order = " abcdefghijklmnopqrstuvwxyz,'.:-?!1234567890/\()[]<>"
+        self.lstart = None
+        for pixel in range(image.get_width()):
+            p = image.get_at((pixel,0))
+            if self.lstart != None and p == (255,0,0):
+                #get image letter
+                dist = pixel - self.lstart -1
+                height = image.get_height()
+                pos= (self.lstart+1,0)
+                #cutting
+                letter = self.get_letter(image,pos,(dist,height))
+                #adding to dictionary
+                self.letters[order[count]] = letter
+                count +=1
+            if p == (255,0,0):
+                self.lstart = pixel
+    
+    def get_letter(self, image, pos, size):
+        letter = image.subsurface((pos,size))
+        letter.set_colorkey((0,0,0))
+        return letter
+
+    def render(self, text, fontSize, clr=None, width=0):
+        size = self.scale * fontSize
+        self.split_text = self.splitWords(text, size)
+        print(self.split_text)
+        if width > 0:
+            pass
+
+    def splitWords(self,text,size):
+        words = text.split(' ')
+        split_text = [[word,self.getLength(word,size)] for word in words]
+
+        return split_text
+
+    def getLength(self,word,size):
+        if word != "\n":
+            width = -self.spacing* size
+            for letter in word:
+                if letter != '\n':
+                    width += self.letters[letter].get_width() * size + self.spacing * size
+        elif word == "\n":
+            width = 0
+        
+        return width
+
+    def swap_pallet(self,surface,clr):
+        img_copy = pygame.Surface(surface.get_size())
+        img_copy.fill(clr)
+        surface.set_colorkey((255,255,255))
+        img_copy.blit(surface,(0,0))
+        img_copy.set_colorkey((0,0,0))
+        return img_copy
+
+class _Text():
+    def __init__(self,scale,image,spacing):
         order = " abcdefghijklmnopqrstuvwxyz,'.:-?!1234567890/\()[]<>"
         self.letters = {}
         self.lstart = None
@@ -208,13 +273,7 @@ class Text():
 
         return surface
 
-    def swap_pallet(self,surface,clr):
-        img_copy = pygame.Surface(surface.get_size())
-        img_copy.fill(clr)
-        surface.set_colorkey((255,255,255))
-        img_copy.blit(surface,(0,0))
-        img_copy.set_colorkey((0,0,0))
-        return img_copy
+    
     
 class Button():
     def __init__(self,pos,size,colour,icon,scale,func=None,arg=None):

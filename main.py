@@ -60,7 +60,7 @@ class Main():
         with open(f'levels/{name}.json') as f:
                 level_dict = json.load(f)
         level_data = [level_dict,name]
-        newbutton = Button((window_size[0],window_size[1]),(90,18),(0,100,200),self.text.render(name,0.75,False).image,self.guiscale,self.levelOptions,level_data)
+        newbutton = Button((window_size[0],window_size[1]),(90,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,self.levelOptions,level_data)
 
         return newbutton
 
