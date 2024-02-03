@@ -34,7 +34,7 @@ class Editor():
 
         #menu
         self.menu = False
-        self.saveindicator = self.text.render('saving...', 1, False, (0,200,0))
+        self.saveindicator = self.text.render('saving...', 1, (0,200,0))
         self.saveindicator.rect.bottomleft = (2*self.scale,self.WINDOWSIZE[1]-2*self.scale)
         self.saving = False
         self.saved = None

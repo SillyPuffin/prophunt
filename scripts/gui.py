@@ -77,13 +77,13 @@ class Text():
             lengths.append(length)
         return lengths
 
-    def render(self,text,size=1,box = False,clr=None):
+    def render(self,text,size=1,clr=None,width=0,height=0):
         FixedTextbox = False
         size = size * self.scale
         if size < 1:
             size = 1
-        box = scale(self.scale,box)
-        if not box:
+        box = scale(self.scale,(width,height))
+        if box==(0,0):
             string = str(text)
             surface = self.draw_line(string,size)
         else:
@@ -374,7 +374,6 @@ class Slider():
 
     def draw(self,screen):
         screen.blit(self.image,self.rect)
-
 
 class UiContainter():
     def __init__(self,name=None, elements=None):

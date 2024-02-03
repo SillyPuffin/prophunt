@@ -78,7 +78,7 @@ class Main():
         self.menu_groups = {
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical','main_group',[
-                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1,False).image,self.guiscale,switch_ButtonGroup,'play_group'),
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1).image,self.guiscale,switch_ButtonGroup,'play_group'),
                 Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'levelSelect'),
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.guiscale,switch_ButtonGroup,'settings'),
                 Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.guiscale,QuitGame)
