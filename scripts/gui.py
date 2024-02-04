@@ -4,8 +4,9 @@ from pygame.mouse import get_pressed as mouse_buttons
 from .utils import *
 
 class Word_Image():
-    def __init__(self,image):
+    def __init__(self,image,positions):
         self.image = image
+        self.positions = positions
         self.rect = pygame.Rect((0,0),(self.image.get_width(),self.image.get_height()))
 
     def draw(self, screen):
@@ -85,12 +86,29 @@ class Text():
             self.sizedLetLengths[key] = self.letLengths[key] * self.size
         #writes all text into self.lines
         self.writeLines()
+        #getting topright of every letter
+        self.positions = self.returnPos()
+        #drawing
         surface = self.drawLines()
         #pallete swap if necessary
         if clr:
             surface = self.swap_pallet(surface, clr)
 
-        return Word_Image(surface)
+        return Word_Image(surface,self.positions)
+
+    def returnPos(self):
+        positions = []
+        for y,line in enumerate(self.lines):
+            x_offset = 0
+            linePos = []
+            for letter in line:
+                x_offset += self.sizedLetLengths[letter]
+                pos = (x_offset,y*self.size*self.letters[' '].get_height())
+                x_offset += self.spacing*self.size
+                data = (letter,pos)
+                linePos.append(data)
+            positions.append(linePos)
+        return positions
 
     def drawLines(self):
         if self.width == 0:
@@ -187,7 +205,6 @@ class Text():
         words = text.split('\n')
         words = ' \n '.join(words)
         words = words.split(' ')
-        print(words)
         split_text = [[word,self.getLength(word)] for word in words]
 
         return split_text

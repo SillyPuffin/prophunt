@@ -138,6 +138,7 @@ class Main():
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
                 self.word.draw(self.screen)
+                pygame.draw.line(self.screen,(255,255,255),self.word.positions[1][1][1],(self.word.positions[1][1][1][0],self.word.positions[1][1][1][1]+60))
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)
