@@ -88,6 +88,7 @@ class Text():
         self.writeLines()
         #getting topright of every letter
         self.positions = self.returnPos()
+        #returning all lines with newline characters on so 
         #drawing
         surface = self.drawLines()
         #pallete swap if necessary
@@ -99,7 +100,7 @@ class Text():
     def returnPos(self):
         positions = []
         for y,line in enumerate(self.lines):
-            x_offset = 0
+            x_offset = self.spacing*self.size
             linePos = []
             for letter in line:
                 x_offset += self.sizedLetLengths[letter]
@@ -122,7 +123,7 @@ class Text():
         for key in self.letters:
             scaleLetters[key] = pygame.transform.scale(self.letters[key],(self.sizedLetLengths[key],self.letters[key].get_height()*self.size))
         for y,line in enumerate(self.lines):
-            x_offset = 0
+            x_offset = self.spacing *self.size
             for letter in line:
                 surface.blit(scaleLetters[letter],(x_offset,y*scaleLetters[' '].get_height()))
                 x_offset += self.sizedLetLengths[letter] + self.spacing * self.size
@@ -133,12 +134,12 @@ class Text():
     def writeLines(self):
         self.lines = []
         self.line = ''
-        self.lineWidth = 0
+        self.lineWidth = self.spacing*self.size
         for word in self.split_text:
             if word[0] == '\n':
                 #newline character
                 self.lines.append(self.line)
-                self.lineWidth = 0
+                self.lineWidth = self.spacing*self.size
                 self.line = ''
             elif self.width == 0:
                 if not self.line:
@@ -149,7 +150,7 @@ class Text():
                 #when word is too big of a line it chops it
                 if self.line:
                     self.lines.append(self.line)
-                self.lineWidth = 0
+                self.lineWidth = self.spacing*self.size
                 self.splitWord(word)
             elif self.width > 0 and self.lineWidth < self.width:
                 self.addWord(word)
@@ -173,12 +174,12 @@ class Text():
             if lineWidth == self.width:
                 #If the same next line cos no more will fit
                 self.lines.append(self.line)
-                self.lineWidth = 0 
+                self.lineWidth = self.spacing*self.size
                 self.line = ''
         else:
             #if testwidth goes over, new line and add word to it
             self.lines.append(self.line)
-            self.lineWidth = word[1]
+            self.lineWidth = self.spacing*self.size + word[1]
             self.line = word[0]
 
     def splitWord(self,word):
@@ -194,12 +195,12 @@ class Text():
                     if self.lineWidth == self.width:
                         self.lines.append(self.line)
                         self.line = ''
-                        self.lineWidth = 0
+                        self.lineWidth = self.spacing*self.size
             #resetting line
             if letter == '\n' or testWidth > self.width:
                 self.lines.append(self.line)
                 self.line = letter
-                self.lineWidth = self.sizedLetLengths[letter] + self.spacing * self.size
+                self.lineWidth = self.spacing*self.size + self.sizedLetLengths[letter] + self.spacing * self.size
 
     def splitText(self,text):
         words = text.split('\n')
@@ -212,7 +213,6 @@ class Text():
     def getLength(self,word):
         if word != "\n":
             width = 0
-            # print(type(word))
             for letter in word:
                 width += self.letters[letter].get_width() * self.size + self.spacing * self.size
         elif word == "\n":
