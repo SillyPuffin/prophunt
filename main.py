@@ -41,7 +41,7 @@ class Main():
         self.text = Text(self.guiscale,self.font,1)
         self.editor = None
 
-        self.word = self.text.render('happeningggg',1,(0,255,0))
+        self.word = self.text.render('happen     \n  in',1,(0,255,0),50)
 
         self.init_menu_groups()
         #self.word.rect.topleft = (0,0)
@@ -138,7 +138,7 @@ class Main():
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
                 self.word.draw(self.screen)
-                #pygame.draw.line(self.screen,(255,255,255),self.word.positions[1][1][1],(self.word.positions[1][1][1][0],self.word.positions[1][1][1][1]+60))
+                pygame.draw.line(self.screen,(255,255,255),self.word.positions[0][11][1],(self.word.positions[0][11][1][0],self.word.positions[0][11][1][1]+60))
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)

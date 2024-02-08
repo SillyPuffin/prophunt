@@ -100,12 +100,13 @@ class Text():
     def returnPos(self):
         positions = []
         for y,line in enumerate(self.lines):
-            x_offset = self.spacing*self.size
+            x_offset = 0
             linePos = []
             for letter in line:
-                x_offset += self.sizedLetLengths[letter]
                 pos = (x_offset,y*self.size*self.letters[' '].get_height())
-                x_offset += self.spacing*self.size
+                if letter != '\n':
+                    x_offset += self.sizedLetLengths[letter]
+                    x_offset += self.spacing*self.size
                 data = (letter,pos)
                 linePos.append(data)
             positions.append(linePos)
@@ -125,8 +126,9 @@ class Text():
         for y,line in enumerate(self.lines):
             x_offset = self.spacing *self.size
             for letter in line:
-                surface.blit(scaleLetters[letter],(x_offset,y*scaleLetters[' '].get_height()))
-                x_offset += self.sizedLetLengths[letter] + self.spacing * self.size
+                if letter != '\n':
+                    surface.blit(scaleLetters[letter],(x_offset,y*scaleLetters[' '].get_height()))
+                    x_offset += self.sizedLetLengths[letter] + self.spacing * self.size
         surface.set_colorkey((0,0,0))
 
         return surface
@@ -136,16 +138,18 @@ class Text():
         self.line = ''
         self.lineWidth = self.spacing*self.size
         for word in self.split_text:
-            if word[0] == '\n':
+            if word[0] == '\n' or (self.lineWidth >= self.width and self.width > 0):
                 #newline character
+                if word[0] == '\n':
+                    self.line += '\n'
                 self.lines.append(self.line)
                 self.lineWidth = self.spacing*self.size
                 self.line = ''
             elif self.width == 0:
-                if not self.line:
-                    self.line += word[0]
-                else:
-                    self.line += ' ' + word[0]
+                self.line += word[0]
+            elif ' ' in word[0]:
+                self.line += word[0]
+                self.lineWidth += word[1]
             elif self.width > 0 and word[1] > self.width:
                 #when word is too big of a line it chops it
                 if self.line:
@@ -153,25 +157,18 @@ class Text():
                 self.lineWidth = self.spacing*self.size
                 self.splitWord(word)
             elif self.width > 0 and self.lineWidth < self.width:
+                #when word fits on line
                 self.addWord(word)
         if self.line:
             self.lines.append(self.line)
 
     def addWord(self,word):
-        #only add space if word before it
-        if not self.line:
-            wordWidth = word[1]
-        else:
-            wordWidth = self.space * self.size + word[1]
-        testWidth = self.lineWidth + wordWidth
+        testWidth = self.lineWidth + word[1]
         #checking to make sure there is enought space
         if testWidth <= self.width:
-            if not self.line:
-                self.line += word[0]
-            else:
-                self.line += ' ' + word[0]
-            lineWidth += wordWidth
-            if lineWidth == self.width:
+            self.line += word[0]
+            self.lineWidth += word[1]
+            if self.lineWidth == self.width:
                 #If the same next line cos no more will fit
                 self.lines.append(self.line)
                 self.lineWidth = self.spacing*self.size
@@ -203,9 +200,33 @@ class Text():
                 self.lineWidth = self.spacing*self.size + self.sizedLetLengths[letter] + self.spacing * self.size
 
     def splitText(self,text):
-        words = text.split('\n')
-        words = ' \n '.join(words)
-        words = words.split(' ')
+        words = []
+        word = ''
+        last = None
+        for character in text:
+            if character != ' ':
+                if character == '\n':
+                    words.append(word)
+                    words.append('\n')
+                    word = ''
+                    last = None
+                elif last == None or last != ' ':
+                    word += character
+                    last = character
+                elif last == ' ':
+                    words.append(word)
+                    word = character
+                    last = character
+            elif character == ' ':
+                if last != ' ' and last != None:
+                    words.append(word)
+                    word = character
+                    last = character
+                elif last == ' ' or last == None:
+                    word += character
+                    last = character
+        if word: words.append(word)
+        
         split_text = [[word,self.getLength(word)] for word in words]
 
         return split_text
