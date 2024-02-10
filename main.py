@@ -70,7 +70,7 @@ class Main():
 
     def levelOptions(self,game,data):
         self.menu_groups['levelOption'] = Column(vec(window_size)/2,5,self.guiscale,'vertical','levelOption',{
-            'rename':Button((0,0),(70,18),(0,100,200),self.text.render('rename').image,self.guiscale),
+            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.scale,self,'helo',False),
             'load':Button((0,0),(70,18),(0,100,200),self.text.render('load').image,self.guiscale,OpenLevel,data),
             'delete':Button((0,0),(70,18),(0,100,200),self.text.render('delete').image,self.guiscale,deleteLevel,data[1]),
             'back':Button((0,0),(70,18),(0,100,200),self.text.render('back').image,self.guiscale,closeLevelOptions)

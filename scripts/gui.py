@@ -6,13 +6,14 @@ from .utils import *
 class Word_Image():
     def __init__(self,image,positions):
         self.image = image
+
         self.positions = positions
         self.rect = pygame.Rect((0,0),(self.image.get_width(),self.image.get_height()))
 
     def draw(self, screen):
         screen.blit(self.image,self.rect)
 
-class TextBox():
+class _TextBox():
     def __init__(self,text,box):
         self.texts = text
         self.box = box
@@ -76,10 +77,10 @@ class Text():
         letter.set_colorkey((0,0,0))
         return letter
 
-    def render(self, text, fontSize, clr=None, width=0):
+    def render(self, text, fontSize=1, clr=None, width=0):
         self.size = self.scale * fontSize
         self.width = width * self.scale
-        self.split_text = self.splitText(str(text))
+        self.split_text = self.splitText(str(text).lower())
         #making a dictionary that holds the scaled size of each letter
         self.sizedLetLengths = {}
         for key in self.letLengths:
@@ -249,6 +250,93 @@ class Text():
         img_copy.set_colorkey((0,0,0))
         return img_copy
 
+class TextBox():
+    def __init__(self,pos,size,padding,colour,accent,_scale,level,text='',edit=True,func=None):
+        self.colour = colour
+        self.accent = accent
+        self.padding = padding * _scale
+
+        self.pos = vec(pos)
+        self.scale = _scale
+        self.size = scale(_scale,size)
+        self.pad_size = (self.size[0]-self.padding*2,self.size[1]-self.padding*2)
+        self.rect = pygame.Rect(self.pos,self.size)
+
+        self.text = text
+        self.editable = edit
+
+        self.baseImage = pygame.Surface(self.size, pygame.SRCALPHA)
+        self.baseImage.fill(self.accent)
+        pygame.draw.rect(self.baseImage,self.colour,(self.padding,self.padding,self.pad_size[0],self.pad_size[1]))
+
+        self.icon = level.text.render(self.text,1,None,self.pad_size[0]/self.scale)
+        self.letters = self.icon.positions
+        
+        if self.icon.rect.height > self.pad_size[1]:
+            self.scroll = 0
+            self.scrollable = True
+        else:
+            self.scrollable = False
+        print(self.icon.rect.width)
+        self.icon.rect.x = (self.pad_size[0] - self.icon.rect.width) / 2 + self.padding
+        if self.scrollable:
+            self.icon.rect.y = self.padding
+        else:
+            self.icon.rect.y = (self.pad_size[1] - self.icon.rect.height) / 2 + self.padding
+
+        self.image = self.baseImage.copy()
+        self.icon.draw(self.image)
+
+        self.hovering = False
+        self.hovered = False
+        self.down = False
+        self.selected = False
+
+        self.dark = pygame.Surface(self.size,pygame.SRCALPHA)
+        self.dark.fill((0,0,0,90))
+        self.light = pygame.Surface(self.size,pygame.SRCALPHA)
+        self.light.fill((0,0,0,20))
+        self.mask = pygame.mask.from_surface(self.baseImage)
+        self.outline =  [coord for coord in self.mask.outline(4)]
+    
+    def update(self,events,mouse,game):
+        self.hovering = False
+        self.image = self.baseImage.copy()
+        if self.rect.collidepoint(mouse):
+            self.hovering = True
+        if self.hovering == False:
+            self.down = False
+
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.hovering:
+                self.down = True
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.down:
+                self.selected = True
+                self.down = False
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.hovering == False:
+                self.selected = False
+
+        if self.selected:
+            self.image.blit(self.light,(0,0))
+            pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
+
+        if not self.scrollable:
+            # print(self.icon.rect.topleft)
+            self.icon.draw(self.image)
+        else:
+            self.icon.rect.y = self.padding + self.scroll
+            self.icon.draw(self.image)
+
+        if not self.selected:
+            if self.down:
+                self.image.blit(self.dark,(0,0))
+            
+            if self.hovering:
+                pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
+    
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        
 class Button():
     def __init__(self,pos,size,colour,icon,scale,func=None,arg=None):
         UpScaledSize = (size[0]*scale,size[1]*scale)
@@ -262,7 +350,6 @@ class Button():
 
         self.func = func
         self.down = False
-        self.hovered = False
         self.selected = False
 
         self.dark = pygame.Surface(UpScaledSize,pygame.SRCALPHA)
@@ -279,23 +366,19 @@ class Button():
             hover = True
         if hover == False:
             self.down = False
-            self.hovered = False
+
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and hover:
                 self.down = True
-                self.hovered= True
-                self.selected = True
-            if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and self.hovered == True and hover:
+            if event.type== pygame.MOUSEBUTTONUP and event.button == 1 and self.down:
                 if self.arg != None:
                     self.func(game,self.arg)
                 elif self.func:
                     self.func(game)
                 
-                self.selected = False
-                self.hovered = False
                 self.down = False
-            elif  event.type== pygame.MOUSEBUTTONUP and event.button == 1:
-                self.selected = False
+            # elif event.type== pygame.MOUSEBUTTONUP and event.button == 1:
+            #     self.selected = False
 
         if self.down:
             self.image = self.bimage.copy()
@@ -303,7 +386,7 @@ class Button():
         else:
             self.image = self.bimage.copy()
 
-        if hover or self.selected:
+        if hover:
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
 
     def collidepoint(self,point):

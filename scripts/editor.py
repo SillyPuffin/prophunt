@@ -165,7 +165,7 @@ class Editor():
             self.origin = vec(mouse_pos()) - self.scroll
 
     def BlockPlace(self):
-        if mouse_buttons()[0] and self.active_block != None and self.menu == False:
+        if mouse_buttons()[0] and self.active_block != None:
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
             images = self.images.tile_sets[self.active_block]#tileset
@@ -180,7 +180,7 @@ class Editor():
                 self.updateNeighbours(pos,self.images.tile_sets)
                 self.savedata['grid'][key] = new_tile.getData()
             
-        if mouse_buttons()[2] and self.menu == False:
+        if mouse_buttons()[2]:
             images = self.images.tile_sets[self.active_block]
             pos = self.GetTilePos(mouse_pos())
             key = f'{int(pos.x)}:{int(pos.y)}'
@@ -248,6 +248,11 @@ class Editor():
         if self.saving:
             self.saveindicator.draw(self.display)
     
+    def inputFunctions(self):
+        if self.menu == False:
+            self.pan_input()
+            self.BlockPlace()
+
     def updateMenu(self,events,mouse,game):
         if (pygame.KEYUP,pygame.K_ESCAPE) in self.inputEvents:
             self.menu = not self.menu
@@ -260,9 +265,8 @@ class Editor():
         #updating
         self.updateMenu(events,game.mouse,game)
         
-        #panning and grid
-        self.pan_input()
-        self.BlockPlace()
+        #iputting
+        self.inputFunctions()
 
         #drawing
         self.display.fill((0,20,50))
