@@ -70,7 +70,7 @@ class Main():
 
     def levelOptions(self,game,data):
         self.menu_groups['levelOption'] = Column(vec(window_size)/2,5,self.guiscale,'vertical','levelOption',{
-            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.scale,self,'helo',False),
+            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.guiscale,self,'helo',False),
             'load':Button((0,0),(70,18),(0,100,200),self.text.render('load').image,self.guiscale,OpenLevel,data),
             'delete':Button((0,0),(70,18),(0,100,200),self.text.render('delete').image,self.guiscale,deleteLevel,data[1]),
             'back':Button((0,0),(70,18),(0,100,200),self.text.render('back').image,self.guiscale,closeLevelOptions)
@@ -138,7 +138,7 @@ class Main():
                 self.screen.fill('red')
                 self.active_group.draw(self.screen)
                 self.word.draw(self.screen)
-                pygame.draw.line(self.screen,(255,255,255),self.word.positions[0][11][1],(self.word.positions[0][11][1][0],self.word.positions[0][11][1][1]+60))
+                # pygame.draw.line(self.screen,(255,255,255),self.word.positions[0][11][1],(self.word.positions[0][11][1][0],self.word.positions[0][11][1][1]+60))
 
             #updating & framerate
             debug(int(self.clock.get_fps()),Scale)

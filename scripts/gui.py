@@ -4,10 +4,11 @@ from pygame.mouse import get_pressed as mouse_buttons
 from .utils import *
 
 class Word_Image():
-    def __init__(self,image,positions):
+    def __init__(self,image,positions,height):
         self.image = image
 
         self.positions = positions
+        self.height = height
         self.rect = pygame.Rect((0,0),(self.image.get_width(),self.image.get_height()))
 
     def draw(self, screen):
@@ -96,7 +97,7 @@ class Text():
         if clr:
             surface = self.swap_pallet(surface, clr)
 
-        return Word_Image(surface,self.positions)
+        return Word_Image(surface,self.positions,self.rowheight)
 
     def returnPos(self):
         positions = []
@@ -124,6 +125,7 @@ class Text():
         scaleLetters = {}
         for key in self.letters:
             scaleLetters[key] = pygame.transform.scale(self.letters[key],(self.sizedLetLengths[key],self.letters[key].get_height()*self.size))
+        self.rowheight = scaleLetters[' '].get_height()
         for y,line in enumerate(self.lines):
             x_offset = self.spacing *self.size
             for letter in line:
@@ -261,23 +263,26 @@ class TextBox():
         self.size = scale(_scale,size)
         self.pad_size = (self.size[0]-self.padding*2,self.size[1]-self.padding*2)
         self.rect = pygame.Rect(self.pos,self.size)
-
-        self.text = text
-        self.editable = edit
+        self.typerect = pygame.Rect((self.pos[0]+self.padding,self.pos[1] + self.padding),self.pad_size)
 
         self.baseImage = pygame.Surface(self.size, pygame.SRCALPHA)
         self.baseImage.fill(self.accent)
         pygame.draw.rect(self.baseImage,self.colour,(self.padding,self.padding,self.pad_size[0],self.pad_size[1]))
 
+        #typing
+        self.text = text
+        self.editable = edit
         self.icon = level.text.render(self.text,1,None,self.pad_size[0]/self.scale)
-        self.letters = self.icon.positions
+        self.rowheight = self.icon.height
+        self.index = None
+        #getting pos of all letters and 1d list
+        self.getletters()
         
         if self.icon.rect.height > self.pad_size[1]:
             self.scroll = 0
             self.scrollable = True
         else:
             self.scrollable = False
-        print(self.icon.rect.width)
         self.icon.rect.x = (self.pad_size[0] - self.icon.rect.width) / 2 + self.padding
         if self.scrollable:
             self.icon.rect.y = self.padding
@@ -288,20 +293,68 @@ class TextBox():
         self.icon.draw(self.image)
 
         self.hovering = False
-        self.hovered = False
         self.down = False
         self.selected = False
+        self.mousepos = None
 
         self.dark = pygame.Surface(self.size,pygame.SRCALPHA)
         self.dark.fill((0,0,0,90))
         self.light = pygame.Surface(self.size,pygame.SRCALPHA)
-        self.light.fill((0,0,0,20))
+        self.light.fill((0,0,0,40))
         self.mask = pygame.mask.from_surface(self.baseImage)
         self.outline =  [coord for coord in self.mask.outline(4)]
     
+    def genLetList(self):
+        ls = []
+        for row in self.lettersrows:
+            for letter in row:
+                ls.append(letter)
+        return(ls)
+
+    def getletters(self):
+        self.lettersrows = self.icon.positions
+        self.letters = self.genLetList()
+
+    def checkClicked(self,events,mouse):
+        pos = self.getOffset(mouse)
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.typerect.collidepoint(mouse):
+                self.mousepos = self.getOffset(mouse)
+            elif event.type == pygame.MOUSEBUTTONUP and self.mousepos != None:
+                self.getletterindex(self.mousepos)
+                self.mousepos = None
+        
+        if self.mousepos != None:
+            offset = self.mousepos - pos
+            distance = offset.magnitude()
+            if distance >= 1*self.scale:
+                self.mousepos = None
+    
+    def getletterindex(self,_pos):
+        #get pos based of scroll 
+        if self.scrollable:
+            pos = (pos[0],_pos[1]+self.scroll)
+        else:
+            pos = _pos
+
+        #int divide to get y
+        row = int(pos[1] // self.rowheight)
+        #get first and last and decide which way to iteate through
+        #find pos
+        #set self index
+
+    def getOffset(self,mouse):
+        pos = vec(mouse)
+        offset = pos - vec(self.typerect.topleft)
+
+        return offset
+
     def update(self,events,mouse,game):
         self.hovering = False
         self.image = self.baseImage.copy()
+        self.typerect.x = self.rect.x + self.padding
+        self.typerect.y = self.rect.y + self.padding
+
         if self.rect.collidepoint(mouse):
             self.hovering = True
         if self.hovering == False:
@@ -317,8 +370,10 @@ class TextBox():
                 self.selected = False
 
         if self.selected:
+            self.checkClicked(events, mouse)
             self.image.blit(self.light,(0,0))
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
+            
 
         if not self.scrollable:
             # print(self.icon.rect.topleft)
