@@ -275,11 +275,13 @@ class TextBox():
         self.icon = level.text.render(self.text,1,None,self.pad_size[0]/self.scale)
         self.rowheight = self.icon.height
         self.index = None
+        self.updater = level
         #getting pos of all letters and 1d list
         self.getletters()
         
         if self.icon.rect.height > self.pad_size[1]:
-            self.scroll = 0
+            self.rowgap = (self.pad_size[1] - self.rowheight) / 2
+            self.scroll = self.rowgap
             self.scrollable = True
         else:
             self.scrollable = False
@@ -318,9 +320,9 @@ class TextBox():
     def checkClicked(self,events,mouse):
         pos = self.getOffset(mouse)
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and self.typerect.collidepoint(mouse):
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.typerect.collidepoint(mouse):
                 self.mousepos = self.getOffset(mouse)
-            elif event.type == pygame.MOUSEBUTTONUP and self.mousepos != None:
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.mousepos != None:
                 self.getletterindex(self.mousepos)
                 self.mousepos = None
         
@@ -330,18 +332,49 @@ class TextBox():
             if distance >= 1*self.scale:
                 self.mousepos = None
     
+    def findIndex(self,index,rowY):
+        count = -1
+        #add previous rows
+        if rowY > 0:
+            for y in range(rowY):
+                for letter in self.lettersrows[y]:
+                    count += 1
+        
+        #adding on letters in the same list
+        for position,letter in enumerate(self.lettersrows[rowY]):
+            if position < index:
+                count += 1
+            else:
+                count+= 1
+                return count
+
+    def searchlist(self,row,pos,y):
+        for index,letter in enumerate(row):
+            if letter[1][0] >= pos[0]:
+                if index == 0:
+                    self.index = self.findIndex(index,y)
+                    break
+                else:
+                    self.index = self.findIndex(index-1,y)
+                    break
+
     def getletterindex(self,_pos):
         #get pos based of scroll 
         if self.scrollable:
-            pos = (pos[0],_pos[1]+self.scroll)
+            pos = (_pos[0],_pos[1]-self.scroll)
         else:
             pos = _pos
 
         #int divide to get y
-        row = int(pos[1] // self.rowheight)
-        #get first and last and decide which way to iteate through
-        #find pos
-        #set self index
+        y = int(pos[1] // self.rowheight)
+        #search list for letter index
+        rowList = self.lettersrows[y]
+        #use last index if greater than last position
+        if pos[0] > rowList[-1][1][0]:
+            self.index = self.findIndex(len(rowList)-1,y)
+        else:
+            self.searchlist(rowList,pos,y)
+        print(self.index)
 
     def getOffset(self,mouse):
         pos = vec(mouse)
@@ -359,6 +392,16 @@ class TextBox():
             self.hovering = True
         if self.hovering == False:
             self.down = False
+        
+        if self.scrollable and self.hovering:
+            for event in events:
+                if event.type == pygame.MOUSEWHEEL:
+                    self.scroll += event.y*self.scale
+            #limiting scroll
+            if self.scroll > self.rowgap:
+                self.scroll = self.rowgap
+            elif self.scroll < -self.rowheight*(len(self.lettersrows)-1) + self.rowgap:
+                self.scroll = -self.rowheight *(len(self.lettersrows)-1) + self.rowgap
 
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.hovering:
