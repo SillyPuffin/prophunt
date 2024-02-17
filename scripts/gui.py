@@ -4,41 +4,15 @@ from pygame.mouse import get_pressed as mouse_buttons
 from .utils import *
 
 class Word_Image():
-    def __init__(self,image,positions,height):
+    def __init__(self,image,positions,height,spacing,clr):
         self.image = image
-
+        self.clr = clr
+        self.spacing = spacing
         self.positions = positions
         self.height = height
         self.rect = pygame.Rect((0,0),(self.image.get_width(),self.image.get_height()))
 
     def draw(self, screen):
-        screen.blit(self.image,self.rect)
-
-class _TextBox():
-    def __init__(self,text,box):
-        self.texts = text
-        self.box = box
-        self.rect = self.box.get_rect()
-        self.box.blit(self.texts,(0,0))
-        self.image = self.box.copy()
-        self.scroll = 0
-        self.max_scroll= -abs(self.box.get_height() - self.texts.get_height())
-
-    def update(self,events,mouse,game):
-        if self.rect.collidepoint(mouse):
-            for event in events:
-                if event.type == pygame.MOUSEWHEEL:
-                    self.scroll += event.y * 16
-        if self.scroll < self.max_scroll:
-            self.scroll = self.max_scroll
-        if self.scroll > 0:
-            self.scroll = 0
-
-        self.box.fill(0)
-        self.box.blit(self.texts,(0,self.scroll))
-        self.image = self.box.copy()
-
-    def draw(self,screen):
         screen.blit(self.image,self.rect)
 
 class Text():
@@ -79,6 +53,8 @@ class Text():
         return letter
 
     def render(self, text, fontSize=1, clr=None, width=0):
+        if clr == None:
+            clr = (255,255,255)
         self.size = self.scale * fontSize
         self.width = width * self.scale
         self.split_text = self.splitText(str(text).lower())
@@ -94,44 +70,49 @@ class Text():
         #drawing
         surface = self.drawLines()
         #pallete swap if necessary
-        if clr:
+        if clr != (255,255,255):
             surface = self.swap_pallet(surface, clr)
 
-        return Word_Image(surface,self.positions,self.rowheight)
+        return Word_Image(surface,self.positions,self.rowheight,self.spacing*self.size,clr)
 
     def returnPos(self):
         positions = []
+        y_offset = self.spacing * self.size
         for y,line in enumerate(self.lines):
             x_offset = 0
             linePos = []
             for letter in line:
-                pos = (x_offset,y*self.size*self.letters[' '].get_height())
+                pos = (x_offset,y_offset)
                 if letter != '\n':
                     x_offset += self.sizedLetLengths[letter]
                     x_offset += self.spacing*self.size
                 data = (letter,pos)
                 linePos.append(data)
             positions.append(linePos)
+            y_offset += self.letters[' '].get_height() * self.size + self.size * self.spacing
         return positions
 
     def drawLines(self):
         if self.width == 0:
             maxwidth = max([self.getLength(line) for line in self.lines])
             #if width is unspecified do it to the largest line width
-            surface = pygame.Surface((maxwidth,self.letters[' '].get_height()*self.size*len(self.lines)))
+            surface = pygame.Surface((maxwidth,self.letters[' '].get_height()*self.size+self.spacing*self.size*len(self.lines)))
         else:
-            surface = pygame.Surface((self.width,self.letters[' '].get_height()*self.size*len(self.lines)))
+            surface = pygame.Surface((self.width,(self.letters[' '].get_height() + self.spacing)*self.size*len(self.lines)))
+
         #blitting
         scaleLetters = {}
         for key in self.letters:
             scaleLetters[key] = pygame.transform.scale(self.letters[key],(self.sizedLetLengths[key],self.letters[key].get_height()*self.size))
         self.rowheight = scaleLetters[' '].get_height()
+        y_offset = self.spacing * self.size
         for y,line in enumerate(self.lines):
             x_offset = self.spacing *self.size
             for letter in line:
                 if letter != '\n':
-                    surface.blit(scaleLetters[letter],(x_offset,y*scaleLetters[' '].get_height()))
+                    surface.blit(scaleLetters[letter],(x_offset,y_offset))
                     x_offset += self.sizedLetLengths[letter] + self.spacing * self.size
+            y_offset += scaleLetters[' '].get_height() + self.spacing * self.size
         surface.set_colorkey((0,0,0))
 
         return surface
@@ -270,22 +251,31 @@ class TextBox():
         pygame.draw.rect(self.baseImage,self.colour,(self.padding,self.padding,self.pad_size[0],self.pad_size[1]))
 
         #typing
+        self.flash = None
+        self.showCursor = True
+        self.cursor = None
+
         self.text = text
         self.editable = edit
         self.icon = level.text.render(self.text,1,None,self.pad_size[0]/self.scale)
+        self.spacing = self.icon.spacing
         self.rowheight = self.icon.height
+
+        self.clr = self.icon.clr
+        self.cursorImage = pygame.Surface((self.spacing,self.rowheight),pygame.SRCALPHA)
+        self.cursorImage.fill((230,230,230,200))
+
         self.index = None
         self.updater = level
         #getting pos of all letters and 1d list
         self.getletters()
         
         if self.icon.rect.height > self.pad_size[1]:
-            self.rowgap = (self.pad_size[1] - self.rowheight) / 2
-            self.scroll = self.rowgap
+            self.scroll = 0
             self.scrollable = True
         else:
             self.scrollable = False
-        self.icon.rect.x = (self.pad_size[0] - self.icon.rect.width) / 2 + self.padding
+        self.icon.rect.x = self.padding
         if self.scrollable:
             self.icon.rect.y = self.padding
         else:
@@ -352,35 +342,63 @@ class TextBox():
         for index,letter in enumerate(row):
             if letter[1][0] >= pos[0]:
                 if index == 0:
-                    self.index = self.findIndex(index,y)
-                    break
+                    return self.findIndex(index,y)
+                    
                 else:
-                    self.index = self.findIndex(index-1,y)
-                    break
-
+                    return self.findIndex(index-1,y)
+                    
     def getletterindex(self,_pos):
         #get pos based of scroll 
         if self.scrollable:
             pos = (_pos[0],_pos[1]-self.scroll)
         else:
             pos = _pos
-
+        #reset cursor
+        self.resetCursor()
         #int divide to get y
-        y = int(pos[1] // self.rowheight)
+        y = int(pos[1] // (self.rowheight+self.spacing))
         #search list for letter index
         rowList = self.lettersrows[y]
         #use last index if greater than last position
         if pos[0] > rowList[-1][1][0]:
             self.index = self.findIndex(len(rowList)-1,y)
         else:
-            self.searchlist(rowList,pos,y)
-        print(self.index)
+            self.index = self.searchlist(rowList,pos,y)
+
+        if self.index != None:
+            pos = self.letters[self.index][1]
+            pos = [pos[0]+self.padding,pos[1]+self.padding]
+            self.cursor = pos
 
     def getOffset(self,mouse):
         pos = vec(mouse)
         offset = pos - vec(self.typerect.topleft)
 
         return offset
+
+    def updateCursor(self):
+        if self.cursor != None and self.flash == None:
+            self.flash = time.time()
+
+        current = time.time()
+        if self.flash:
+            if current - self.flash >= 0.5:
+                self.flash = time.time()
+                self.showCursor = not self.showCursor
+    
+    def drawCursor(self):
+        if self.scrollable:
+            if self.showCursor == True:
+                self.image.blit(self.cursorImage,(self.cursor[0],self.cursor[1]+self.scroll))
+        else:
+            if self.showCursor == True:
+                self.image(self.cursorImage,self.cursor)
+
+    def resetCursor(self):
+        self.flash = None
+        self.cursor = None
+        self.index = None
+        self.showCursor = True
 
     def update(self,events,mouse,game):
         self.hovering = False
@@ -398,11 +416,11 @@ class TextBox():
                 if event.type == pygame.MOUSEWHEEL:
                     self.scroll += event.y*self.scale
             #limiting scroll
-            if self.scroll > self.rowgap:
-                self.scroll = self.rowgap
-            elif self.scroll < -self.rowheight*(len(self.lettersrows)-1) + self.rowgap:
-                self.scroll = -self.rowheight *(len(self.lettersrows)-1) + self.rowgap
-
+            if self.scroll > 0:
+                self.scroll = 0
+            elif self.scroll < -(self.rowheight+self.spacing)*(len(self.lettersrows)-1):
+                self.scroll = -(self.rowheight+self.spacing) *(len(self.lettersrows)-1)
+            
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.hovering:
                 self.down = True
@@ -411,19 +429,30 @@ class TextBox():
                 self.down = False
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.hovering == False:
                 self.selected = False
+                self.resetCursor()
 
         if self.selected:
-            self.checkClicked(events, mouse)
+            if self.editable:
+                self.checkClicked(events, mouse)
+                self.updateCursor()
             self.image.blit(self.light,(0,0))
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
+        
+        #TODO 
+        #add an update image function so that it doesnt redraw every frame
+        #Fix the scroll border where letters go over the top
+        #adjust colouring for depression and select
+        #add fucking writng
             
-
         if not self.scrollable:
             # print(self.icon.rect.topleft)
             self.icon.draw(self.image)
         else:
             self.icon.rect.y = self.padding + self.scroll
             self.icon.draw(self.image)
+        
+        if self.selected and self.editable and self.cursor != None:
+            self.drawCursor()
 
         if not self.selected:
             if self.down:

@@ -64,13 +64,13 @@ class Main():
         with open(f'levels/{name}.json') as f:
                 level_dict = json.load(f)
         level_data = [level_dict,name]
-        newbutton = Button((window_size[0],window_size[1]),(90,18),(0,100,200),self.text.render(name,1,False).image,self.guiscale,self.levelOptions,level_data)
+        newbutton = Button((window_size[0],window_size[1]),(90,18),(0,100,200),self.text.render(name,1,None).image,self.guiscale,self.levelOptions,level_data)
 
         return newbutton
 
     def levelOptions(self,game,data):
         self.menu_groups['levelOption'] = Column(vec(window_size)/2,5,self.guiscale,'vertical','levelOption',{
-            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.guiscale,self,'helooioi\nbreakinghhhhhhhhhhhhhh',False),
+            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.guiscale,self,'helooioi\nbreakinghhhhhhhhhhhhhg',True),
             'load':Button((0,0),(70,18),(0,100,200),self.text.render('load').image,self.guiscale,OpenLevel,data),
             'delete':Button((0,0),(70,18),(0,100,200),self.text.render('delete').image,self.guiscale,deleteLevel,data[1]),
             'back':Button((0,0),(70,18),(0,100,200),self.text.render('back').image,self.guiscale,closeLevelOptions)
@@ -83,23 +83,23 @@ class Main():
             #button(pos,size,colour,image,scale,func,arg)
             'main_group':Column((vec(window_size)/2),5,self.guiscale,'vertical','main_group',[
                 Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('play',1).image,self.guiscale,switch_ButtonGroup,'play_group'),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,False).image,self.guiscale,switch_ButtonGroup,'levelSelect'),
-                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,False).image,self.guiscale,switch_ButtonGroup,'settings'),
-                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,False).image,self.guiscale,QuitGame)
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('level editor',1,None).image,self.guiscale,switch_ButtonGroup,'levelSelect'),
+                Button((base_size[0]/2,base_size[1]/2-20),(70,18),(0,100,200),self.text.render('settings',1,None).image,self.guiscale,switch_ButtonGroup,'settings'),
+                Button((base_size[0]/2,base_size[1]/2+20),(70,18),(0,100,200),self.text.render('quit',1,None).image,self.guiscale,QuitGame)
                 ]),
             'play_group':Column(scale(self.scale,(100,135)),5,self.guiscale,"vertical",'play_group',[
-                Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,False).image,self.guiscale),
-                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,False).image,self.guiscale),
-                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
+                Button((base_size[0]/2,base_size[1]/2-30),(70,18),(0,100,200),self.text.render('join',1,None).image,self.guiscale),
+                Button((base_size[0]/2,base_size[1]/2),(70,18),(0,100,200),self.text.render('host',1,None).image,self.guiscale),
+                Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,None).image,self.guiscale,switch_ButtonGroup,'main_group')
                 ]),
             'levelSelect':UiContainter("levelSelect",{
-                'back':Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group'),
-                'new':Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,False).image,self.guiscale,CreateNewLevel),
+                'back':Button((window_size[0]-35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('back',1,None).image,self.guiscale,switch_ButtonGroup,'main_group'),
+                'new':Button((35*self.guiscale,window_size[1]-9*self.guiscale),(70,18),(0,100,200),self.text.render('new level',1,None).image,self.guiscale,CreateNewLevel),
                 'levels':Grid((vec(window_size)/2),5,self.guiscale,self.scale,self.text,(400,200),'fixed','levelselect',self.levels)
             }),
             'settings':Column((vec(window_size)/2),5,self.guiscale,'vertical',"settings",{
                 'gui':Slider((0,0),(70,15),[(0,100,200),(0,75,200),(0,120,200)],self.guiscale,1,[1,8],resizeMenus,self.guiscale),
-                'backbutton':Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,False).image,self.guiscale,switch_ButtonGroup,'main_group')
+                'backbutton':Button((base_size[0]/2,base_size[1]/2+40),(70,18),(0,100,200),self.text.render('back',1,None).image,self.guiscale,switch_ButtonGroup,'main_group')
                 })
             
         }
