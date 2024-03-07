@@ -4,8 +4,10 @@ from pygame.mouse import get_pressed as mouse_buttons
 from .utils import *
 
 class Word_Image():
-    def __init__(self,image,positions,height,spacing,clr):
+    def __init__(self,image,positions,height,spacing,clr,size=None):
         self.image = image
+        if size != None:
+            self.size = size
         self.clr = clr
         self.spacing = spacing
         self.positions = positions
@@ -64,7 +66,7 @@ class Text():
             self.sizedLetLengths[key] = self.letLengths[key] * self.size
         #writes all text into self.lines
         self.writeLines()
-        #getting topright of every letter
+        #getting topleft of every letter
         self.positions = self.returnPos()
         #returning all lines with newline characters on so 
         #drawing
@@ -73,7 +75,7 @@ class Text():
         if clr != (255,255,255):
             surface = self.swap_pallet(surface, clr)
 
-        return Word_Image(surface,self.positions,self.rowheight,self.spacing*self.size,clr)
+        return Word_Image(surface,self.positions,self.rowheight,self.spacing*self.size,clr,self.sizedLetLengths)
 
     def returnPos(self):
         positions = []
@@ -82,7 +84,7 @@ class Text():
             x_offset = 0
             linePos = []
             for letter in line:
-                pos = (x_offset,y_offset)
+                pos = [x_offset,y_offset]
                 if letter != '\n':
                     x_offset += self.sizedLetLengths[letter]
                     x_offset += self.spacing*self.size
@@ -301,6 +303,8 @@ class TextBox():
         for row in self.lettersrows:
             for letter in row:
                 ls.append(letter)
+        
+        ls.append((None,[ls[-1][1][0]+self.icon.size[ls[-1][0]]+self.spacing,ls[-1][1][1]]))
         return(ls)
 
     def getletters(self):
@@ -343,10 +347,16 @@ class TextBox():
             if letter[1][0] >= pos[0]:
                 if index == 0:
                     return self.findIndex(index,y)
-                    
                 else:
                     return self.findIndex(index-1,y)
-                    
+
+    def setCursorPos(self):
+        pos = self.letters[self.index][1]
+        if pos[0] > self.typerect.width - self.spacing:
+            pos[0] = self.typerect.width - self.spacing
+        pos = [pos[0]+self.padding,pos[1]+self.padding]
+        self.cursor = pos
+
     def getletterindex(self,_pos):
         #get pos based of scroll 
         if self.scrollable:
@@ -366,9 +376,7 @@ class TextBox():
             self.index = self.searchlist(rowList,pos,y)
 
         if self.index != None:
-            pos = self.letters[self.index][1]
-            pos = [pos[0]+self.padding,pos[1]+self.padding]
-            self.cursor = pos
+            self.setCursorPos()
 
     def getOffset(self,mouse):
         pos = vec(mouse)
@@ -392,13 +400,30 @@ class TextBox():
                 self.image.blit(self.cursorImage,(self.cursor[0],self.cursor[1]+self.scroll))
         else:
             if self.showCursor == True:
-                self.image(self.cursorImage,self.cursor)
+                self.image.blit(self.cursorImage,self.cursor)
 
     def resetCursor(self):
         self.flash = None
         self.cursor = None
         self.index = None
         self.showCursor = True
+
+    def input(self,events):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if self.cursor != None:
+                    if event.key == pygame.K_LEFT:
+                        if self.index - 1 > -1:
+                            self.index -= 1
+                            self.setCursorPos()
+                            self.flash = None
+                            self.showCursor = True
+                    if event.key == pygame.K_RIGHT:
+                        if self.index + 1 < len(self.letters):
+                            self.index += 1
+                            self.setCursorPos()
+                            self.flash = None
+                            self.showCursor = True
 
     def update(self,events,mouse,game):
         self.hovering = False
@@ -435,6 +460,7 @@ class TextBox():
             if self.editable:
                 self.checkClicked(events, mouse)
                 self.updateCursor()
+                self.input(events)
             self.image.blit(self.light,(0,0))
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
         
@@ -443,6 +469,9 @@ class TextBox():
         #Fix the scroll border where letters go over the top
         #adjust colouring for depression and select
         #add fucking writng
+        #add up and down naviagtion for cursor
+        #make scroll change if cursor is offscreen
+        #create function to get the x and y of an index
             
         if not self.scrollable:
             # print(self.icon.rect.topleft)
