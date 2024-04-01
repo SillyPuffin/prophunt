@@ -315,12 +315,14 @@ class TextBox():
         #adding end points to each row
         if len(self.lettersrows) > 1: 
             for i in range(len(self.lettersrows)-1):
+                if self.lettersrows[i][-1][0] == '\n':
+                    continue
                 self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
 
         index = len(self.lettersrows)-1
-        if self.lettersrows != []:
+        if self.lettersrows != [] and self.lettersrows[index][-1][0] != '\n':
             self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0]+self.icon.size[self.lettersrows[index][-1][0]]+self.spacing,self.lettersrows[index][-1][1][1]]))
-        else:
+        elif self.lettersrows == []:
             self.lettersrows = [[(1,[0,0])]]
 
         self.letters = self.genLetList()
@@ -488,17 +490,50 @@ class TextBox():
                                     tempindex -= 1
                             del self.letters[self.index+tempindex]
                             self.index -= 1
-                            
+                            #removing end line flags
                             newletters = list(map(lambda x: x[0] if type(x[0]) == str else "",self.letters))
                             for column, string in enumerate(newletters):
                                 if string == '':
                                     del newletters[column]
                             newtext = "".join(newletters)
-                            #uncertain
+                            #remaking text
+                            self.text = newtext
+                            print(self.text)
+                            self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
+                            print(self.icon.positions)
+                            self.checkScroll()
+                            self.getletters()
+                            print(self.lettersrows)
+                            #to prevent exceeding bounds
+                            if self.index > len(self.letters)-1 and len(self.letters)-1 != -1:
+                                self.index = len(self.letters)-1
+                            self.setCursorPos()
+                            self.showCursor = True
+                            self.flash = None
+                    
+                    else:
+                        character = event.unicode
+                        if character == '\r':
+                            character = '\n'
+                        if character in list(self.updater.text.letters.keys()) or character == '\n':
+                            numberoflines = len(self.lettersrows)
+                            self.letters.insert(self.index, (character,[0,0]))
+                            self.index += 1
+                            #removing end line flags
+                            newletters = list(map(lambda x: x[0] if type(x[0]) == str else "",self.letters))
+                            for column, string in enumerate(newletters):
+                                if string == '':
+                                    del newletters[column]
+                            newtext = "".join(newletters)
+                            print(newtext)
+                            #remaking text
                             self.text = newtext
                             self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
                             self.checkScroll()
                             self.getletters()
+                            print(self.lettersrows)
+                            if len(self.lettersrows) > numberoflines and character != '\n':
+                                self.index += 1
                             #to prevent exceeding bounds
                             if self.index > len(self.letters)-1:
                                 self.index = len(self.letters)-1

@@ -41,10 +41,9 @@ class Main():
         self.text = Text(self.guiscale,self.font,1)
         self.editor = None
 
-        self.word = self.text.render('happen     \n  in',1,(0,255,0),50)
+        self.word = self.text.render('happen     \n',1,(0,255,0),50)
 
         self.init_menu_groups()
-        #self.word.rect.topleft = (0,0)
 
     def regenMenus(self,activegroup):
         self.text = Text(self.guiscale,self.font,1)
@@ -70,7 +69,7 @@ class Main():
 
     def levelOptions(self,game,data):
         self.menu_groups['levelOption'] = Column(vec(window_size)/2,5,self.guiscale,'vertical','levelOption',{
-            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.guiscale,self,'helooioiiouoiuoi',True),
+            'rename':TextBox((0,0),(70,18),2,(0,100,150),(0,100,200),self.guiscale,self,'helooioii\nouoiuoi',True),
             'load':Button((0,0),(70,18),(0,100,200),self.text.render('load').image,self.guiscale,OpenLevel,data),
             'delete':Button((0,0),(70,18),(0,100,200),self.text.render('delete').image,self.guiscale,deleteLevel,data[1]),
             'back':Button((0,0),(70,18),(0,100,200),self.text.render('back').image,self.guiscale,closeLevelOptions)
