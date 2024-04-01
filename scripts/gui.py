@@ -316,12 +316,15 @@ class TextBox():
         if len(self.lettersrows) > 1: 
             for i in range(len(self.lettersrows)-1):
                 if self.lettersrows[i][-1][0] == '\n':
-                    continue
-                self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
+                    self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0],self.lettersrows[i][-1][1][1]]))
+                else:
+                    self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
 
         index = len(self.lettersrows)-1
         if self.lettersrows != [] and self.lettersrows[index][-1][0] != '\n':
             self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0]+self.icon.size[self.lettersrows[index][-1][0]]+self.spacing,self.lettersrows[index][-1][1][1]]))
+        elif self.lettersrows != [] and self.lettersrows[index][-1][0] == '\n':
+            self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0],self.lettersrows[index][-1][1][1]]))
         elif self.lettersrows == []:
             self.lettersrows = [[(1,[0,0])]]
 
@@ -498,12 +501,9 @@ class TextBox():
                             newtext = "".join(newletters)
                             #remaking text
                             self.text = newtext
-                            print(self.text)
                             self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
-                            print(self.icon.positions)
                             self.checkScroll()
                             self.getletters()
-                            print(self.lettersrows)
                             #to prevent exceeding bounds
                             if self.index > len(self.letters)-1 and len(self.letters)-1 != -1:
                                 self.index = len(self.letters)-1
@@ -525,14 +525,12 @@ class TextBox():
                                 if string == '':
                                     del newletters[column]
                             newtext = "".join(newletters)
-                            print(newtext)
                             #remaking text
                             self.text = newtext
                             self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
                             self.checkScroll()
                             self.getletters()
-                            print(self.lettersrows)
-                            if len(self.lettersrows) > numberoflines and character != '\n':
+                            if len(self.lettersrows) > numberoflines:
                                 self.index += 1
                             #to prevent exceeding bounds
                             if self.index > len(self.letters)-1:
@@ -602,7 +600,7 @@ class TextBox():
         #TODO 
         #Fix the scroll border where letters go over the top
         #adjust colouring for depression and select
-        #add fucking writng
+        #fix scroll jitter bug
         
             
         if not self.scrollable:
