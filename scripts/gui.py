@@ -272,16 +272,7 @@ class TextBox():
         #getting pos of all letters and 1d list
         self.getletters()
         
-        if self.icon.rect.height > self.pad_size[1]:
-            self.scroll = 0
-            self.scrollable = True
-        else:
-            self.scrollable = False
-        self.icon.rect.x = self.padding
-        if self.scrollable:
-            self.icon.rect.y = self.padding
-        else:
-            self.icon.rect.y = (self.pad_size[1] - self.icon.rect.height) / 2 + self.padding
+        self.checkScroll()
 
         self.image = self.baseImage.copy()
         self.icon.draw(self.image)
@@ -298,17 +289,40 @@ class TextBox():
         self.mask = pygame.mask.from_surface(self.baseImage)
         self.outline =  [coord for coord in self.mask.outline(4)]
     
+    def checkScroll(self):
+        if self.icon.rect.height > self.pad_size[1]:
+            self.scroll = 0
+            self.scrollable = True
+        else:
+            self.scrollable = False
+        self.icon.rect.x = self.padding
+        if self.scrollable:
+            self.icon.rect.y = self.padding
+        else:
+            self.icon.rect.y = (self.pad_size[1] - self.icon.rect.height) / 2 + self.padding
+
     def genLetList(self):
         ls = []
         for row in self.lettersrows:
             for letter in row:
                 ls.append(letter)
         
-        ls.append((None,[ls[-1][1][0]+self.icon.size[ls[-1][0]]+self.spacing,ls[-1][1][1]]))
-        return(ls)
+        # ls.append((None,[ls[-1][1][0]+self.icon.size[ls[-1][0]]+self.spacing,ls[-1][1][1]]))
+        return ls
 
     def getletters(self):
         self.lettersrows = self.icon.positions
+        #adding end points to each row
+        if len(self.lettersrows) > 1: 
+            for i in range(len(self.lettersrows)-1):
+                self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
+
+        index = len(self.lettersrows)-1
+        if self.lettersrows != []:
+            self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0]+self.icon.size[self.lettersrows[index][-1][0]]+self.spacing,self.lettersrows[index][-1][1][1]]))
+        else:
+            self.lettersrows = [[(1,[0,0])]]
+
         self.letters = self.genLetList()
 
     def checkClicked(self,events,mouse):
@@ -356,6 +370,7 @@ class TextBox():
             pos[0] = self.typerect.width - self.spacing
         pos = [pos[0]+self.padding,pos[1]+self.padding]
         self.cursor = pos
+        self.focusCursor()
 
     def getletterindex(self,_pos):
         #get pos based of scroll 
@@ -371,6 +386,7 @@ class TextBox():
         rowList = self.lettersrows[y]
         #use last index if greater than last position
         if pos[0] > rowList[-1][1][0]:
+            print('hi')
             self.index = self.findIndex(len(rowList)-1,y)
         else:
             self.index = self.searchlist(rowList,pos,y)
@@ -414,16 +430,100 @@ class TextBox():
                 if self.cursor != None:
                     if event.key == pygame.K_LEFT:
                         if self.index - 1 > -1:
-                            self.index -= 1
-                            self.setCursorPos()
-                            self.flash = None
-                            self.showCursor = True
-                    if event.key == pygame.K_RIGHT:
+                            if self.letters[self.index-1][0] != None:
+                                self.index -= 1
+                                self.setCursorPos()
+                                self.flash = None
+                                self.showCursor = True
+                            #skipping the end one if it isn't manually selected
+                            elif self.index - 2 < len(self.letters):
+                                self.index -= 2
+                                self.setCursorPos()
+                                self.flash = None
+                                self.showCursor = True
+                    elif event.key == pygame.K_RIGHT:
                         if self.index + 1 < len(self.letters):
-                            self.index += 1
+                            if self.letters[self.index+1][0] != None:
+                                #stop duping of cursor when going to a new line
+                                if self.letters[self.index][0] == None:
+                                    self.index += 2
+                                else:
+                                    self.index += 1
+                                self.setCursorPos()
+                                self.flash = None
+                                self.showCursor = True
+                            #skipping the end one if it isn't manually selected
+                            elif self.index + 2 < len(self.letters):
+                                self.index += 2
+                                self.setCursorPos()
+                                self.flash = None
+                                self.showCursor = True
+                    elif event.key == pygame.K_UP:
+                        pos = self.getCoords(self.index)
+                        if pos[1]-1 >= 0:
+                            pos[1] -= 1
+                            if pos[0] > len(self.lettersrows[pos[1]])-1:
+                                pos[0] = len(self.lettersrows[pos[1]])-1
+                        self.index = self.findIndex(pos[0],pos[1])   
+                        self.setCursorPos()
+                        self.flash = None
+                        self.showCursor = True
+                    elif event.key == pygame.K_DOWN:
+                        pos = self.getCoords(self.index)
+                        if pos[1]+1 <= len(self.lettersrows)-1:
+                            pos[1] += 1
+                            if pos[0] > len(self.lettersrows[pos[1]])-1:
+                                pos[0] = len(self.lettersrows[pos[1]])-1
+                        self.index = self.findIndex(pos[0],pos[1])   
+                        self.setCursorPos()
+                        self.flash = None
+                        self.showCursor = True
+                    
+                    #typing
+                    elif event.key == pygame.K_BACKSPACE:
+                        if self.letters != [(1,[0,0])]:
+                            tempindex = -1
+                            if self.index-1 >= 0:
+                                if self.letters[self.index-1][0] == None:
+                                    tempindex -= 1
+                            del self.letters[self.index+tempindex]
+                            self.index -= 1
+                            
+                            newletters = list(map(lambda x: x[0] if type(x[0]) == str else "",self.letters))
+                            for column, string in enumerate(newletters):
+                                if string == '':
+                                    del newletters[column]
+                            newtext = "".join(newletters)
+                            #uncertain
+                            self.text = newtext
+                            self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
+                            self.checkScroll()
+                            self.getletters()
+                            #to prevent exceeding bounds
+                            if self.index > len(self.letters)-1:
+                                self.index = len(self.letters)-1
                             self.setCursorPos()
-                            self.flash = None
                             self.showCursor = True
+                            self.flash = None
+
+    def focusCursor(self):
+        cursor_top = self.letters[self.index][1][1]
+        cursor_bottom = cursor_top + self.rowheight - 1
+
+        cursor_top += self.scroll
+        cursor_bottom += self.scroll
+
+        if cursor_top < 0 or cursor_bottom > self.typerect.height:
+            self.scroll = 0 - self.letters[self.index][1][1]
+
+    def getCoords(self, index):
+        count = 0
+        for y, row in enumerate(self.lettersrows):
+            for x, letter in enumerate(row):
+                if count == index:
+                    return [x,y]
+                else:
+                    count += 1 
 
     def update(self,events,mouse,game):
         self.hovering = False
@@ -465,13 +565,10 @@ class TextBox():
             pygame.draw.polygon(self.image,(255,255,255),self.outline,4)
         
         #TODO 
-        #add an update image function so that it doesnt redraw every frame
         #Fix the scroll border where letters go over the top
         #adjust colouring for depression and select
         #add fucking writng
-        #add up and down naviagtion for cursor
-        #make scroll change if cursor is offscreen
-        #create function to get the x and y of an index
+        
             
         if not self.scrollable:
             # print(self.icon.rect.topleft)
