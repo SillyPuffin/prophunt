@@ -553,8 +553,9 @@ class TextBox():
         cursor_top = self.letters[self.index][1][1]
         cursor_bottom = cursor_top + self.rowheight - 1
 
-        cursor_top += self.scroll
-        cursor_bottom += self.scroll
+        if self.scrollable:
+            cursor_top += self.scroll
+            cursor_bottom += self.scroll
 
         if cursor_top < 0 or cursor_bottom > self.typerect.height:
             self.scroll = 0 - self.letters[self.index][1][1]
