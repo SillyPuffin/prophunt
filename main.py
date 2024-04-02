@@ -23,7 +23,7 @@ window_size = (base_size[0]*Scale,base_size[1]*Scale)
 
 #hello i like cheese
 
-#main class
+#main class      
 class Main():
     def __init__(self):
         self.GameState = 'menu'

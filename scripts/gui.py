@@ -59,6 +59,8 @@ class Text():
             clr = (255,255,255)
         self.size = self.scale * fontSize
         self.width = width * self.scale
+        if width > 0:
+            self.width -= self.spacing * self.size
         self.split_text = self.splitText(str(text).lower())
         #making a dictionary that holds the scaled size of each letter
         self.sizedLetLengths = {}
@@ -128,9 +130,13 @@ class Text():
                 #newline character
                 if word[0] == '\n':
                     self.line += '\n'
-                self.lines.append(self.line)
-                self.lineWidth = self.spacing*self.size
-                self.line = ''
+                    self.lines.append(self.line)
+                    self.lineWidth = self.spacing*self.size
+                    self.line = ''
+                else:
+                    self.lines.append(self.line)
+                    self.lineWidth = self.spacing * self.size + word[1]
+                    self.line = word[0]
             elif self.width == 0:
                 self.line += word[0]
             elif ' ' in word[0]:
@@ -145,6 +151,7 @@ class Text():
             elif self.width > 0 and self.lineWidth < self.width:
                 #when word fits on line
                 self.addWord(word)
+                # print(self.width, self.lineWidth)
         if self.line:
             self.lines.append(self.line)
 
@@ -272,6 +279,7 @@ class TextBox():
         #getting pos of all letters and 1d list
         self.getletters()
         
+        self.scroll = None
         self.checkScroll()
 
         self.image = self.baseImage.copy()
@@ -291,7 +299,8 @@ class TextBox():
     
     def checkScroll(self):
         if self.icon.rect.height > self.pad_size[1]:
-            self.scroll = 0
+            if self.scroll == None:
+                self.scroll = 0
             self.scrollable = True
         else:
             self.scrollable = False
@@ -315,10 +324,11 @@ class TextBox():
         #adding end points to each row
         if len(self.lettersrows) > 1: 
             for i in range(len(self.lettersrows)-1):
-                if self.lettersrows[i][-1][0] == '\n':
-                    self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0],self.lettersrows[i][-1][1][1]]))
-                else:
-                    self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
+                if self.lettersrows[i]:
+                    if self.lettersrows[i][-1][0] == '\n':
+                        self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0],self.lettersrows[i][-1][1][1]]))
+                    else:
+                        self.lettersrows[i].append((None,[self.lettersrows[i][-1][1][0]+self.icon.size[self.lettersrows[i][-1][0]]+self.spacing,self.lettersrows[i][-1][1][1]]))
 
         index = len(self.lettersrows)-1
         if self.lettersrows != [] and self.lettersrows[index][-1][0] != '\n':
@@ -326,7 +336,7 @@ class TextBox():
         elif self.lettersrows != [] and self.lettersrows[index][-1][0] == '\n':
             self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0],self.lettersrows[index][-1][1][1]]))
         elif self.lettersrows == []:
-            self.lettersrows = [[(1,[0,0])]]
+            self.lettersrows.append([[(1,[0,0])]])
 
         self.letters = self.genLetList()
 
@@ -391,7 +401,6 @@ class TextBox():
         rowList = self.lettersrows[y]
         #use last index if greater than last position
         if pos[0] > rowList[-1][1][0]:
-            print('hi')
             self.index = self.findIndex(len(rowList)-1,y)
         else:
             self.index = self.searchlist(rowList,pos,y)
@@ -492,7 +501,7 @@ class TextBox():
                                 if self.letters[self.index-1][0] == None:
                                     tempindex -= 1
                             del self.letters[self.index+tempindex]
-                            self.index -= 1
+                            self.index += tempindex
                             #removing end line flags
                             newletters = list(map(lambda x: x[0] if type(x[0]) == str else "",self.letters))
                             for column, string in enumerate(newletters):
@@ -528,6 +537,7 @@ class TextBox():
                             #remaking text
                             self.text = newtext
                             self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
+                            
                             self.checkScroll()
                             self.getletters()
                             if len(self.lettersrows) > numberoflines:
