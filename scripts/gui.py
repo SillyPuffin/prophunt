@@ -243,7 +243,7 @@ class Text():
         return img_copy
 
 class TextBox():
-    def __init__(self,pos,size,padding,colour,accent,_scale,level,text='',edit=True,func=None):
+    def __init__(self,pos,size,padding,colour,accent,_scale,level,text='',edit=True):
         self.colour = colour
         self.accent = accent
         self.padding = padding * _scale
@@ -336,7 +336,7 @@ class TextBox():
         elif self.lettersrows != [] and self.lettersrows[index][-1][0] == '\n':
             self.lettersrows[index].append((1,[self.lettersrows[index][-1][1][0],self.lettersrows[index][-1][1][1]]))
         elif self.lettersrows == []:
-            self.lettersrows.append([[(1,[0,0])]])
+            self.lettersrows.append([(1,[0,0])])
 
         self.letters = self.genLetList()
 
@@ -513,6 +513,7 @@ class TextBox():
                             self.icon = self.updater.text.render(self.text,1,None,self.pad_size[0]/self.scale)
                             self.checkScroll()
                             self.getletters()
+                            # print(self.letters, self.index)
                             #to prevent exceeding bounds
                             if self.index > len(self.letters)-1 and len(self.letters)-1 != -1:
                                 self.index = len(self.letters)-1
@@ -548,6 +549,8 @@ class TextBox():
                             self.setCursorPos()
                             self.showCursor = True
                             self.flash = None
+
+                    print(self.text)
 
     def focusCursor(self):
         cursor_top = self.letters[self.index][1][1]
