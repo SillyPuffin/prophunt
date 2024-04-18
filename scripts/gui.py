@@ -613,12 +613,9 @@ class TextBox():
         
         #TODO 
         #Fix the scroll border where letters go over the top
-        #adjust colouring for depression and select
-        #fix scroll jitter bug
         
             
         if not self.scrollable:
-            # print(self.icon.rect.topleft)
             self.icon.draw(self.image)
         else:
             self.icon.rect.y = self.padding + self.scroll
